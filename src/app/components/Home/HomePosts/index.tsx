@@ -13,12 +13,14 @@ const HomePosts = ({ posts }: { posts: HomePostType }) => {
     },
     initialData: posts,
     refetchOnMount: false,
+    staleTime:10000
  })
     return (
       <div>
         {data && data.map(({id, slug, title, users }) => 
-            <Link href={`/${slug}`} className="block border-1 rounded-xl mt-4 p-4 w-200 h-auto" key={id}>
+            <Link href={`/${slug}`} className="block border-1 rounded-xl mt-4 p-4" key={id}>
               <h2 className="font-bold text-xl">{title}</h2>
+              <div className="text-lg text-black">/{slug}</div>
               <div className="text-right">by {users?.username}</div>
             </Link>)}
       </div>
