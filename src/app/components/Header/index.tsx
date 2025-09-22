@@ -11,7 +11,6 @@ export default function Header() {
       <header className="flex justify-between items-center flex-wrap">
         <Logo />
         <AccountLinks />
-        <button className="button-tertiary">Test</button>
       </header>
       <div className="mt-4 mx-auto w-[80%] border-b-4"></div>
     </>
