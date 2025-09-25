@@ -1,7 +1,6 @@
-import {createBrowserClient, createServerClient} from "@supabase/ssr";
-import { Database } from "@/utils/supabase/database.types";
+import { createServerClient } from "@supabase/ssr";
+import { Database } from "./database.types";
 import { cookies } from "next/headers";
-
 
 export const createClient = async () => {
   const cookieStore = await cookies();
@@ -25,5 +24,3 @@ export const createClient = async () => {
     }
   );
 };
-
-

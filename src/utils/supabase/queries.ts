@@ -1,7 +1,7 @@
 import { type QueryData } from "@supabase/supabase-js";
 import {createClient} from "./browser.client"
 
-export const getHomePosts = async (SUPBASE: ReturnType<typeof createClient>) => {
+export const getHomePosts = async (SUPABASE: ReturnType<typeof createClient>) => {
   const supabase = createClient()
     return await supabase.from('posts')
         .select('id, title, slug, users("username")')
