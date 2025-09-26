@@ -31,5 +31,9 @@ export const middleware = async (request: NextRequest) => {
     error,
   } = await supabase.auth.getUser();
 
-  return supabaseResponse;
-};
+  const protectedRoutes = [/^\/create$/]
+  if (!user && protectedRoutes.some(route => route.test(request.nextUrl.pathname))) {
+
+  }
+
+}

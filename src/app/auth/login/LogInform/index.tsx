@@ -3,9 +3,14 @@ import { LogIn } from "@/actions/log-in"
 import {useForm} from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { logInSchema } from "@/actions/schemas"
+import ErrorMessage from "@/app/components/ErrorMessage"
 
 const LogInForm = () => {
-  const {register, handleSubmit} = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
     resolver: zodResolver(logInSchema)
   })
 
@@ -19,6 +24,7 @@ const LogInForm = () => {
           name="email"
           placeholder="Enter your email..."
         />
+        {errors.email && <ErrorMessage message={errors.email.message!} />}
       </fieldset>
 
       <fieldset>
@@ -30,6 +36,7 @@ const LogInForm = () => {
           name="password"
           placeholder="Enter your password..."
         />
+        {errors.password && <ErrorMessage message={errors.password.message!} />}
       </fieldset>
 
       <button className="button-secondary w-1/2 m-auto mb-4">Log in!</button>
