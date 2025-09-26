@@ -4,7 +4,7 @@ const SignUpForm = () => {
   return (
     <form
       action={SignUp}
-      className="border-1 rounded-xl p-4 flex flex-col w-3xl mx-auto"
+      className="flex flex-col mb-4"
     >
       <h2>Sign up</h2>
 

@@ -20,8 +20,8 @@ export const SignUp = async (formdata: FormData) => {
     const { data, error } = await supabase
       .from("users")
       .insert([
-        { id: user.id, email: user.email, username: userdata.username },
-      ]);
+        { id: user.id, email: user.email, username: userdata.username }]);
+    console.log("new user:", data, "Error", error);
   }
 
   if (error) throw error;
