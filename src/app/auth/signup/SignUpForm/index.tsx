@@ -2,10 +2,7 @@ import { SignUp } from "@/actions/sign-up";
 
 const SignUpForm = () => {
   return (
-    <form
-      action={SignUp}
-      className="flex flex-col mb-4"
-    >
+    <form action={SignUp} className="flex flex-col mb-4">
       <h2>Sign up</h2>
 
       <fieldset>
@@ -16,7 +13,8 @@ const SignUpForm = () => {
           id="email"
           className="border-1 rounded-md p-2 w-full"
         />
-
+        </fieldset>
+      <fieldset>
         <label htmlFor="username">Username</label>
         <input
           type="text"
@@ -24,7 +22,8 @@ const SignUpForm = () => {
           id="username"
           className="border-1 rounded-md p-2 w-full"
         />
-
+      </fieldset>
+      <fieldset>
         <label htmlFor="password">Password</label>
         <input
           type="password"
