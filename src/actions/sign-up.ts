@@ -12,15 +12,13 @@ export const SignUp = async (formdata: FormData) => {
   const supabase = await createClient();
 
   const {
-    data: { user },
-    error,
-  } = await supabase.auth.signUp(userdata);
+    data: {user}, error} = await supabase.auth.signUp(userdata);
 
   if (user && user.email) {
     const { data, error } = await supabase
       .from("users")
       .insert([
-        { id: user.id, email: user.email, username: userdata.username }]);
+        {id: user.id, email: user.email, username: userdata.username}]);
     console.log("new user:", data, "Error", error);
   }
 

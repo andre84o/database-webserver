@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const middleware = async (request: NextRequest) => {
   let supabaseResponse = NextResponse.next({ request });
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -16,24 +15,27 @@ export const middleware = async (request: NextRequest) => {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-
-          cookiesToSet.forEach(
-            ({ name, value, options }) =>
-              supabaseResponse.cookies.set(name, value, options)
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
           );
         },
       },
     }
   );
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+   const {
+     data: { user },
+     error,
+   } = await supabase.auth.getUser();
 
-  const protectedRoutes = [/^\/create$/]
-  if (!user && protectedRoutes.some(route => route.test(request.nextUrl.pathname))) {
+   const protectedRoutes = [/^\/creates$/];
+  if (
+    !user &&
+    protectedRoutes.some((route) => route.test(request.nextUrl.pathname))
+  ) {
+    const newUrl = request.nextUrl.clone();
+    newUrl.pathname = "/auth/login";
 
+    return NextResponse.redirect(newUrl);
   }
-
-}
+};
