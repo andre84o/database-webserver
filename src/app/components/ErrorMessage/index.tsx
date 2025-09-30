@@ -1,8 +1,4 @@
 const ErrorMessage = ({ message }: { message: string }) => {
-  return (
-    <div className="error-message">
-      <p>{message}</p>
-    </div>
-  );
+  return <div className="text-red-500">{message}</div>;
 };
 export default ErrorMessage;

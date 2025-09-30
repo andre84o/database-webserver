@@ -1,4 +1,3 @@
-// Fil: app/auth/login/LoginForm.tsx
 "use client";
 
 import { LogIn } from "@/actions/log-in";
@@ -7,22 +6,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { logInSchema } from "@/actions/schemas";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import { useMutation } from "@tanstack/react-query";
+import { de } from "zod/locales";
 
-export default function LoginForm() {
-  // ✅ Hooks ska ligga inuti komponenten
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(logInSchema),
-  });
+const LoginForm = () => {
+  const {register, handleSubmit, formState: {errors}} = useForm({
+    resolver: zodResolver(logInSchema)
+  })
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: LogIn,
-  });
+  })
 
-  // ✅ All JSX återvänder från komponenten, inget “lösryckt” efteråt
   return (
     <>
       <form
@@ -38,10 +32,7 @@ export default function LoginForm() {
             name="email"
             placeholder="Enter your email..."
           />
-          {/* Förklaring: visar valideringsfel för email */}
-          {errors.email && (
-            <ErrorMessage message={errors.email.message as string} />
-          )}
+          {errors.email && <ErrorMessage message={errors.email.message!} />}
         </fieldset>
 
         <fieldset>
@@ -54,7 +45,6 @@ export default function LoginForm() {
             name="password"
             placeholder="Enter your password..."
           />
-          {/* Förklaring: visar valideringsfel för password */}
           {errors.password && (
             <ErrorMessage message={errors.password.message as string} />
           )}
@@ -64,15 +54,14 @@ export default function LoginForm() {
           className="button-secondary w-1/2 m-auto mb-4"
           disabled={isPending}
         >
-          {/* Förklaring: visar laddtext när mutation pågår */}
           {isPending ? "Logging you in!" : "Log in!"}
         </button>
       </form>
-
-      {/* Förklaring: visar ev. fel från mutation */}
       {error && "message" in error && (
         <ErrorMessage message={(error as any).message} />
       )}
     </>
   );
 }
+
+export default LoginForm;
