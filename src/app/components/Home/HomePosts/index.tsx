@@ -1,41 +1,76 @@
-"use client"
+// Fil: app/components/HomePosts.tsx
+"use client";
 import { getHomePosts } from "@/utils/supabase/queries";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/browser.client";
+import { useEffect, useState } from "react";
 
 type PostItem = {
-  id: number
-  slug: string
-  title: string
-  users?: { username?: string } | null
-}
+  id: number;
+  slug: string;
+  title: string;
+  user_id?: string | null; 
+  users?: { id?: string; username?: string } | null; 
+};
 
 const HomePosts = ({ posts }: { posts: PostItem[] }) => {
- const {data} = useQuery<PostItem[]>({
-    queryKey: ['home-posts'],
-    queryFn: async () => {
-      const supabase = createClient();
-      const { data, error } = await getHomePosts(supabase);
+  const supabase = createClient();
 
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setCurrentUserId(data.user?.id ?? null);
+    });
+  }, [supabase]);
+
+  const { data } = useQuery<PostItem[]>({
+    queryKey: ["home-posts"],
+    queryFn: async () => {
+      const { data, error } = await getHomePosts(supabase);
       if (error) throw error;
       return data;
     },
     initialData: posts,
     refetchOnMount: false,
-    staleTime:10000
- })
-    return (
-      <div>
-        {data && data.map(({id, slug, title, users }) => 
-            <Link href={`/${slug}`} className="block border-1 rounded-xl mt-4 p-4" key={id}>
-              <h2 className="font-bold text-xl">{title}</h2>
-              <div className="text-right">by {users?.username}</div>
-            </Link>)}
-      </div>
-      
-    )
-   }
+    staleTime: 10000,
+  });
 
+  return (
+    <div>
+      {data?.map(({ id, slug, title, user_id, users }) => {
+        const ownerIdFromJoin = users?.id ?? null;
+        const isOwner =
+          (currentUserId && user_id && currentUserId === user_id) ||
+          (currentUserId &&
+            ownerIdFromJoin &&
+            currentUserId === ownerIdFromJoin);
+
+        return (
+          <Link
+            href={`/${slug}`}
+            className="block border-1 rounded-xl mt-4 p-4"
+            key={id}
+          >
+            <h2 className="font-bold text-xl">{title}</h2>
+
+            <div className="text-right">
+              by{" "}
+              <span
+                className={
+                  isOwner
+                    ? "bg-slate-200/60 border border-slate-300 text-slate-700 px-2 py-[2px] rounded-md text-xs"
+                    : ""
+                }
+              >
+                {users?.username ?? "Unknown"}
+              </span>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+};
 
 export default HomePosts;
