@@ -1,9 +1,14 @@
+"use server";
 import { getSinglePost } from "@/utils/supabase/queries";
 import EditForm from "./EditForm";
-import { EditPost } from "@/actions/edit-post";
+
+export async function handleEdit(formData: FormData) {
+  const { EditPost } = await import("@/actions/edit-post");
+  await EditPost(formData);
+}
 
 const EditPage = async ({ params }: { params: { slug: string } }) => {
-  const { slug } = params;
+  const { slug } = await params;
   const { data, error } = await getSinglePost(slug);
 
   if (!data) {
@@ -22,7 +27,7 @@ const EditPage = async ({ params }: { params: { slug: string } }) => {
         initialTitle={data.title}
         initialContent={data.content}
         initialImageUrl={data.image_url}
-        action={EditPost}
+        action={handleEdit}
       />
     </div>
   );
