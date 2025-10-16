@@ -1,11 +1,18 @@
-'use client'
-import { getHomePosts, HomePostType } from "@/utils/supabase/queries";
+"use client"
+import { getHomePosts } from "@/utils/supabase/queries";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/browser.client";
 
-const HomePosts = ({ posts }: { posts: HomePostType }) => {
- const {data} = useQuery ({
+type PostItem = {
+  id: number
+  slug: string
+  title: string
+  users?: { username?: string } | null
+}
+
+const HomePosts = ({ posts }: { posts: PostItem[] }) => {
+ const {data} = useQuery<PostItem[]>({
     queryKey: ['home-posts'],
     queryFn: async () => {
       const supabase = createClient();
@@ -30,5 +37,5 @@ const HomePosts = ({ posts }: { posts: HomePostType }) => {
     )
    }
 
-   
+
 export default HomePosts;

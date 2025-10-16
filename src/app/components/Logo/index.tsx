@@ -3,10 +3,11 @@ import Image from "next/image"
 
 const Logo =() => {
     return (
-      <Link href="/" className="button-primary">
-        Database
-        <Image src="/logo-bixy.png" alt="Logo" width={50} height={50} />
-      </Link>
+      <div className="flex flex-row">
+        <Link href="/" className="">
+          <Image src="/logo-b.png" alt="Logo" width={100} height={100} />
+        </Link>
+      </div>
     );
 }
 
