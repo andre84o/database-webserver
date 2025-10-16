@@ -1,4 +1,3 @@
-// Fil: app/page.tsx
 import HomePosts from "@/app/components/Home/HomePosts";
 import { getHomePosts } from "@/utils/supabase/queries";
 import { createClient } from "@/utils/supabase/server-client";

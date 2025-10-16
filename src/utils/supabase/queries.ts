@@ -1,18 +1,19 @@
 import { type QueryData } from "@supabase/supabase-js";
 import { createClient } from "./browser.client";
 
-// Use an injected client when provided, otherwise create a browser client.
-export const getHomePosts = async (supabase = createClient()) => {
-  return await supabase
+export const getHomePosts = async (supabase?: any) => {
+  const client = supabase ?? createClient();
+  return await client
     .from("posts")
-    .select("id, title, slug, users:users(username)")
+    .select("id, title, slug, image_url, users(username)")
     .order("created_at", { ascending: false });
 };
 
-export const getSinglePost = async (slug: string, supabase = createClient()) => {
-  return await supabase
+export const getSinglePost = async (slug: string, supabase?: any) => {
+  const client = supabase ?? createClient();
+  return await client
     .from("posts")
-    .select("id, title, slug, content, user_id, users:users(username)")
+    .select("id, title, slug, content, user_id, image_url, users(username)")
     .eq("slug", slug)
     .single();
 };

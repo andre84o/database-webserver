@@ -4,8 +4,8 @@ import Image from "next/image"
 const Logo =() => {
     return (
       <Link href="/" className="button-primary">
-        Dadabase
-        {/* <Image src="/social-media.png" alt="Logo" width={50} height={50} /> */}
+        Database
+        <Image src="/logo-bixy.png" alt="Logo" width={50} height={50} />
       </Link>
     );
 }
