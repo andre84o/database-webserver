@@ -5,7 +5,9 @@ export const getHomePosts = async (supabase?: any) => {
   const client = supabase ?? createClient();
   return await client
     .from("posts")
-    .select("id, title, slug, image_url, users(username)")
+    // Use explicit foreign-key relationship so Supabase resolves the join
+    // correctly even when RLS or ambiguous relations exist.
+    .select("id, title, slug, users:users!posts_user_id_fkey(username)")
     .order("created_at", { ascending: false });
 };
 
@@ -13,7 +15,7 @@ export const getSinglePost = async (slug: string, supabase?: any) => {
   const client = supabase ?? createClient();
   return await client
     .from("posts")
-    .select("id, title, slug, content, user_id, image_url, users(username)")
+    .select("id, title, slug, content, user_id, users:users!posts_user_id_fkey(username)")
     .eq("slug", slug)
     .single();
 };
