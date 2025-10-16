@@ -1,10 +1,8 @@
-// Fil: utils/supabase/queries.ts
 import { type QueryData } from "@supabase/supabase-js";
 import { createClient } from "./browser.client";
 
 export const getHomePosts = async (supabase?: any) => {
   const client = supabase ?? createClient();
-  // Svenska: Ta med user_id samt users.id så vi kan jämföra mot currentUserId
   return await client
     .from("posts")
     .select(
@@ -15,7 +13,6 @@ export const getHomePosts = async (supabase?: any) => {
 
 export const getSinglePost = async (slug: string, supabase?: any) => {
   const client = supabase ?? createClient();
-  // Svenska: Samma form även här så komponenterna får konsekventa fält
   return await client
     .from("posts")
     .select(

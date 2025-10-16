@@ -33,7 +33,7 @@ const SinglePost = async ({ params }: { params: { slug: string } }) => {
                 <Link href={`/${data.slug}/edit`} className="button">
                   Edit
                 </Link>
-                <form action={handleDelete} method="post">
+                <form action={"/api/posts/delete"} method="post">
                   <input type="hidden" name="postId" value={String(data.id)} />
                   <button type="submit" className="button-danger">
                     Delete

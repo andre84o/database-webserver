@@ -1,4 +1,3 @@
-// Fil: src/components/Header.tsx
 import Image from "next/image";
 import Link from "next/link";
 import Navigation from "../Navigation";
