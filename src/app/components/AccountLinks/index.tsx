@@ -9,21 +9,32 @@ const AccountLinks = async () => {
     error,
   } = await supabase.auth.getUser();
 
+  let username: string | null = null;
+  if (user?.id) {
+    const { data: u } = await supabase
+      .from("users")
+      .select("username")
+      .eq("id", user.id)
+      .maybeSingle();
+    username = (u as any)?.username ?? null;
+  }
+
   return (
-    <div>
-      {user ?
+    <div className="flex items-center gap-3">
+      {user ? (
         <>
+          <div className="text-sm text-gray-400">Signed in as {username ?? user.email}</div>
           <Link className="button-tertiary" href="/create">
             Create Post
           </Link>
 
           <LogOutButton />
         </>
-      : 
+      ) : (
         <Link className="button-primary" href="auth/login">
           Log In
         </Link>
-      }
+      )}
     </div>
   );
 };
