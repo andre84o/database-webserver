@@ -58,7 +58,7 @@ const CreatePage = async () => {
         </div>
 
         <div>
-          <button className="button-quaternary bg-green-100 hover:bg-green-200 border-green-500" type="submit">
+            <button className="button-quaternary" type="submit">
             Create
           </button>
         </div>

@@ -7,7 +7,6 @@ const nextConfig: NextConfig = {
     },
   },
   eslint: {
-    // temporarily ignore ESLint during builds to prevent failures from generated files
     ignoreDuringBuilds: true,
   },
 };

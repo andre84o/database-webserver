@@ -29,49 +29,51 @@ const LoginForm = () => {
   })
 
   return (
-    <>
-      <form
-        onSubmit={handleSubmit((values) => mutate(values))}
-        className="flex flex-col"
-      >
-        <fieldset>
-          <label htmlFor="email">Enter your email</label>
-          <input
-            className="ml-2 mb-4 px-2"
-            {...register("email")}
-            id="email"
-            name="email"
-            placeholder="Enter your email..."
-          />
-          {errors.email && <ErrorMessage message={errors.email.message!} />}
-        </fieldset>
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
+        <h2 className="text-3xl font-extrabold mb-2 text-neutral-900">Welcome back</h2>
+        <p className="text-sm text-neutral-600 mb-6">Log in to continue to your dashboard</p>
 
-        <fieldset>
-          <label htmlFor="password">Enter your password</label>
-          <input
-            type="password"
-            className="ml-2 mb-4 px-2"
-            {...register("password")}
-            id="password"
-            name="password"
-            placeholder="Enter your password..."
-          />
-          {errors.password && (
-            <ErrorMessage message={errors.password.message as string} />
-          )}
-        </fieldset>
+        <form onSubmit={handleSubmit((values) => mutate(values))} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="text-sm text-neutral-600 block mb-2">Email</label>
+            <input
+              {...register("email")}
+              id="email"
+              name="email"
+              placeholder="you@company.com"
+              className="w-full rounded-md border border-neutral-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#735BFD]"
+            />
+            {errors.email && <ErrorMessage message={errors.email.message!} />}
+          </div>
 
-        <button
-          className="button-secondary w-1/2 m-auto mb-4 hover:bg-blue-300"
-          disabled={isPending}
-        >
-          {isPending ? "Logging you in!" : "Log in!"}
-        </button>
-      </form>
-      {error && "message" in error && (
-        <ErrorMessage message={(error as any).message} />
-      )}
-    </>
+          <div>
+            <label htmlFor="password" className="text-sm text-neutral-600 block mb-2">Password</label>
+            <input
+              {...register("password")}
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Your password"
+              className="w-full rounded-md border border-neutral-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#735BFD]"
+            />
+            {errors.password && <ErrorMessage message={errors.password.message as string} />}
+          </div>
+
+          <div className="pt-2">
+            <button type="submit" disabled={isPending} className="w-full button-primary">
+              {isPending ? "Logging you in..." : "Sign in"}
+            </button>
+          </div>
+        </form>
+
+        {error && "message" in error && (
+          <div className="mt-4">
+            <ErrorMessage message={(error as any).message} />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

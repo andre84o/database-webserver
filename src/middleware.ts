@@ -23,12 +23,12 @@ export const middleware = async (request: NextRequest) => {
     }
   );
 
-   const {
-     data: { user },
-     error,
-   } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-   const protectedRoutes = [/^\/creates$/];
+  const protectedRoutes = [/^\/create(?:\/.*)?$/];
   if (
     !user &&
     protectedRoutes.some((route) => route.test(request.nextUrl.pathname))
@@ -38,4 +38,9 @@ export const middleware = async (request: NextRequest) => {
 
     return NextResponse.redirect(newUrl);
   }
+  return supabaseResponse;
+};
+
+export const config = {
+  matcher: ["/create/:path*"],
 };

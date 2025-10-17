@@ -75,7 +75,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                   {/* Content below */}
                   <div className="p-8 flex-1 flex flex-col justify-between">
                     <div>
-                      <span className="inline-block bg-amber-300 text-black text-xs px-3 py-1 rounded-full mb-3">{data[0].category ?? 'Featured'}</span>
+                      <span className="inline-block bg-[var(--brand-center)] text-white text-xs px-3 py-1 rounded-full mb-3">{data[0].category ?? 'Featured'}</span>
                       <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2">{data[0].title}</h2>
                     </div>
 
@@ -104,7 +104,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                   )}
 
                   <div className="p-4">
-                    <span className="inline-block text-xs text-neutral-900 bg-amber-300 px-2 py-1 rounded-full mb-2">
+                    <span className="inline-block text-xs text-white bg-[var(--brand-center)] px-2 py-1 rounded-full mb-2">
                       {(data as any).find((p: any) => p.id === id)?.category ?? 'Featured'}
                     </span>
                     <h3 className="font-semibold text-lg mb-2 text-neutral-900">{title}</h3>
