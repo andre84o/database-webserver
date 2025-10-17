@@ -11,7 +11,7 @@ export const getHomePosts = async (
     let query = client
       .from("posts")
       .select(
-        "id, title, slug, user_id, image_url, category, users:users!posts_user_id_fkey(id, username)"
+        "id, title, slug, content, user_id, image_url, category, users:users!posts_user_id_fkey(id, username)"
       )
       .order("created_at", { ascending: false });
 
@@ -26,7 +26,7 @@ export const getHomePosts = async (
     if ((err as any)?.code === "42703" || /column .* does not exist/i.test(msg)) {
       const res = await client
         .from("posts")
-        .select("id, title, slug, user_id, users:users!posts_user_id_fkey(id, username)")
+        .select("id, title, slug, content, user_id, users:users!posts_user_id_fkey(id, username)")
         .order("created_at", { ascending: false });
       return { data: res.data ?? null, error: res.error, status: res.status } as PostgrestResponse<any>;
     }

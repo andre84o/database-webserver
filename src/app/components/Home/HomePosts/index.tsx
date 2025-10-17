@@ -1,3 +1,4 @@
+// Fil: app/components/Home/HomePosts.tsx
 "use client";
 import { getHomePosts } from "@/utils/supabase/queries";
 import Link from "next/link";
@@ -9,6 +10,7 @@ type PostItem = {
   id: number;
   slug: string;
   title: string;
+  content?: string | null;
   category?: string | null;
   image_url?: string | null;
   user_id?: string | null;
@@ -19,7 +21,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
   const supabase = createClient();
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [category, setCategory] = useState<string>('');
+  const [category, setCategory] = useState<string>("");
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
@@ -43,7 +45,11 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
       <div className="mb-4 flex items-center gap-4">
         <label className="flex items-center gap-2">
           <span className="text-sm">Category</span>
-          <select value={category} onChange={(e) => setCategory(e.target.value)} className="border rounded px-2 py-1">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border rounded px-2 py-1"
+          >
             <option value="">All</option>
             <option>Food</option>
             <option>Politics</option>
@@ -57,28 +63,48 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
         </label>
       </div>
 
-  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+      {/* Svenska: auto-rows-fr ger lika höga rader. Vi fyller dem med h-full på varje kort. */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
         {data && data.length > 0 ? (
           <>
             {data[0] && (
-              <Link href={`/${data[0].slug}`} key={data[0].id} className="lg:col-span-2 lg:row-span-2 block h-full">
+              <Link
+                href={`/${data[0].slug}`}
+                key={data[0].id}
+                className="lg:col-span-2 lg:row-span-2 block h-full"
+              >
                 <article className="group relative overflow-hidden rounded-3xl shadow-xl bg-white/3 hover:shadow-2xl transition-shadow duration-300 h-full flex flex-col">
                   <div className="w-full overflow-hidden">
                     {data[0].image_url ? (
-                      <img src={data[0].image_url} alt={data[0].title} className="w-full h-56 md:h-72 object-cover" />
+                      <img
+                        src={data[0].image_url}
+                        alt={data[0].title}
+                        className="w-full h-56 md:h-72 object-cover"
+                      />
                     ) : (
                       <div className="w-full h-56 md:h-72 bg-gray-200" />
                     )}
                   </div>
                   <div className="p-8 flex-1 flex flex-col justify-between">
                     <div>
-                      <span className="inline-block bg-[var(--brand-center)] text-white text-xs px-3 py-1 rounded-full mb-3">{data[0].category ?? 'Featured'}</span>
-                      <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2">{data[0].title}</h2>
+                      <span className="inline-block bg-[var(--brand-center)] text-white text-xs px-3 py-1 rounded-full mb-3">
+                        {data[0].category ?? "Featured"}
+                      </span>
+                      <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2">
+                        {data[0].title}
+                      </h2>
+                      {data[0].content && (
+                        <p className="text-lg text-neutral-700 mt-2 line-clamp-2">
+                          {String(data[0].content).slice(0, 160)}
+                        </p>
+                      )}
                     </div>
 
                     <div className="mt-4 flex items-center justify-end gap-2 text-sm text-neutral-600">
                       <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-xs text-white">
-                        {data[0].users?.username ? data[0].users.username.charAt(0).toUpperCase() : "U"}
+                        {data[0].users?.username
+                          ? data[0].users.username.charAt(0).toUpperCase()
+                          : "U"}
                       </div>
                       <div>{data[0].users?.username ?? "Unknown"}</div>
                     </div>
@@ -91,24 +117,46 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
               <Link
                 key={id}
                 href={`/${slug}`}
-                className="block rounded-2xl overflow-hidden bg-white shadow-sm"
+                className="block h-full rounded-2xl overflow-hidden bg-white shadow-sm"
               >
-                <article className="relative overflow-hidden rounded-2xl shadow-md bg-white/50 hover:shadow-lg transition-shadow duration-200">
+                <article className="relative overflow-hidden rounded-2xl shadow-md bg-white/50 hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
                   {image_url ? (
-                    <img src={image_url} alt={title} className="w-full h-40 object-cover" />
+                    <img
+                      src={image_url}
+                      alt={title}
+                      className="w-full h-40 object-cover"
+                    />
                   ) : (
                     <div className="w-full h-40 bg-gray-200" />
                   )}
 
-                  <div className="p-4">
-                    <span className="inline-block text-xs text-white bg-[var(--brand-center)] px-2 py-1 rounded-full mb-2">
-                      {(data as any).find((p: any) => p.id === id)?.category ?? 'Featured'}
+                  <div className="p-4 flex flex-col flex-1">
+                    <span className="inline-flex w-fit flex-none whitespace-nowrap text-xs text-white bg-[var(--brand-center)] px-2 py-1 rounded-full mb-2">
+                      {(data as any).find((p: any) => p.id === id)?.category ??
+                        "Featured"}
                     </span>
-                    <h3 className="font-semibold text-lg mb-2 text-neutral-900">{title}</h3>
-                    <div className="flex items-center justify-between text-sm text-neutral-600">
+                    <h3 className="font-semibold text-lg mb-2 text-neutral-900">
+                      {title}
+                    </h3>
+                    <p className="text-sm text-neutral-600 line-clamp-2">
+                      {String(
+                        (data as any).find((p: any) => p.id === id)?.content ??
+                          ""
+                      ).slice(0, 120)}
+                      {(
+                        (data as any).find((p: any) => p.id === id)?.content ??
+                        ""
+                      ).length > 120
+                        ? "..."
+                        : ""}
+                    </p>
+                    <div className="mt-auto flex items-center justify-between text-sm text-neutral-600">
+                      {/* Svenska: mt-auto puttar raden till botten */}
                       <div className="flex items-center gap-2">
                         <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-xs text-white">
-                          {users?.username ? users.username.charAt(0).toUpperCase() : "U"}
+                          {users?.username
+                            ? users.username.charAt(0).toUpperCase()
+                            : "U"}
                         </div>
                         <div>{users?.username ?? "Unknown"}</div>
                       </div>

@@ -50,6 +50,11 @@ const SinglePost = async (props: any) => {
             <h1 className="font-extrabold text-2xl md:text-3xl mb-2">
               {data.title}
             </h1>
+            {data.content && (
+              <p className="text-lg text-neutral-700 mt-4 mb-2 max-w-prose leading-relaxed">
+                {String(data.content).split("\n")[0]}
+              </p>
+            )}
             {isOwner && (
               <div className="mt-4 flex gap-2">
                 <Link
