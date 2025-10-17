@@ -30,7 +30,7 @@ export default function StartWritingButton({ children }: { children?: React.Reac
   };
 
   return (
-    <button onClick={handleClick} className="button-primary inline-block" disabled={loading}>
+    <button onClick={handleClick} className="button-primary inline-block course-pointer" disabled={loading}>
       {children ?? "Start writing"}
     </button>
   );

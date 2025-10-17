@@ -21,7 +21,7 @@ const AboutPage = () => {
                 <StartWritingButton>Create a Post</StartWritingButton>
                 <Link
                   href="/"
-                  className="button-primary text-white inline-block border shadow-2xl"
+                  className="button-primary text-white inline-block border shadow-2xl course-pointer"
                 >
                   Learn more
                 </Link>
@@ -128,12 +128,12 @@ const AboutPage = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {[
-                { name: "Alex Johnson", role: "Founder & CEO" },
-                { name: "Priya Singh", role: "Head of Design" },
-                { name: "Marcus Lee", role: "Lead Engineer" },
-              ].map((p) => (
+                { name: "André Torabpour", role: "Founder & CEO" },
+                { name: "André Torabpour", role: "Head of Design" },
+                { name: "André Torabpour", role: "Lead Engineer" },
+              ].map((p, i) => (
                 <div
-                  key={p.name}
+                  key={`${p.name}-${p.role}-${i}`}
                   className="p-6 bg-white rounded-2xl shadow-md flex gap-4 items-center"
                 >
                   <div className="h-14 w-14 rounded-full bg-[var(--brand-center)] flex items-center justify-center text-white font-semibold text-lg">

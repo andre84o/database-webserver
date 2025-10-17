@@ -1,0 +1,17 @@
+
+> database-webserver@0.1.0 start
+> next start
+
+   ▲ Next.js 15.5.3
+   - Local:        http://localhost:3002
+   - Network:      http://10.5.0.2:3002
+
+ ✓ Starting...
+ ✓ Ready in 1279ms
+Search results: undefined
+GET /api/comments: hasServiceRole= true authorIds= [ '7f5cba1b-48d8-4a2e-a5ef-853af9907b6e' ]
+GET /api/comments: admin users fetch -> count= 1 error= null
+GET /api/comments: hasServiceRole= true authorIds= [ '7f5cba1b-48d8-4a2e-a5ef-853af9907b6e' ]
+GET /api/comments: admin users fetch -> count= 1 error= null
+Terminate batch job (Y/N)? 
+^C

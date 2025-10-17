@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import HomePosts from "@/app/components/Home/HomePosts";
+import Link from "next/link";
 import { getHomePosts } from "@/utils/supabase/queries";
 import { createClient } from "@/utils/supabase/server-client";
 import ExplorePostsLink from "@/app/components/Home/HomePosts/ExplorePostsLink";
@@ -20,12 +21,12 @@ export default async function Home() {
             </p>
             <div className="flex gap-3">
               <ExplorePostsLink />
-              <a
-                href="#"
+              <Link
+                href="/about"
                 className="inline-block border border-white/20 text-white px-5 py-3 rounded-full"
               >
                 About
-              </a>
+              </Link>
             </div>
           </div>
         </div>

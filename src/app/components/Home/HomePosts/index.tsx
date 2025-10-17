@@ -63,7 +63,6 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
             {data[0] && (
               <Link href={`/${data[0].slug}`} key={data[0].id} className="lg:col-span-2 lg:row-span-2 block h-full">
                 <article className="group relative overflow-hidden rounded-3xl shadow-xl bg-white/3 hover:shadow-2xl transition-shadow duration-300 h-full flex flex-col">
-                  {/* Image on top */}
                   <div className="w-full overflow-hidden">
                     {data[0].image_url ? (
                       <img src={data[0].image_url} alt={data[0].title} className="w-full h-56 md:h-72 object-cover" />
@@ -71,8 +70,6 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                       <div className="w-full h-56 md:h-72 bg-gray-200" />
                     )}
                   </div>
-
-                  {/* Content below */}
                   <div className="p-8 flex-1 flex flex-col justify-between">
                     <div>
                       <span className="inline-block bg-[var(--brand-center)] text-white text-xs px-3 py-1 rounded-full mb-3">{data[0].category ?? 'Featured'}</span>

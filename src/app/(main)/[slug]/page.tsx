@@ -3,6 +3,7 @@ import { getSinglePost } from "@/utils/supabase/queries";
 import { createClient } from "@/utils/supabase/server-client";
 import Link from "next/link";
 import DeletePost from "@/actions/delete.post";
+import CommentsHost from "./Comments/CommentsHost";
 
 const SinglePost = async (props: any) => {
   const awaitedProps = await props;
@@ -70,6 +71,9 @@ const SinglePost = async (props: any) => {
             {data.content && (
               <div className="prose max-w-none">{data.content}</div>
             )}
+          </div>
+          <div>
+            <CommentsHost postId={data.id} postOwnerId={data.user_id} />
           </div>
         </>
       )}
