@@ -83,12 +83,10 @@ export async function GET(req: NextRequest) {
     let usersErr: any = null;
     const serviceRoleKey = loadServiceRoleKeyFromEnvFiles();
     const hasServiceRole = !!serviceRoleKey;
-    console.log('GET /api/comments: hasServiceRole=', hasServiceRole, 'authorIds=', authorIds);
     if (hasServiceRole) {
       try {
         const admin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey!);
         const usersRes = await admin.from('users').select('id, username').in('id', authorIds);
-        console.log('GET /api/comments: admin users fetch -> count=', (usersRes.data ?? []).length, 'error=', usersRes.error);
         usersData = usersRes.data;
         usersErr = usersRes.error;
       } catch (e: any) {
@@ -97,7 +95,6 @@ export async function GET(req: NextRequest) {
       }
     } else {
       const usersRes = await supabase.from('users').select('id, username').in('id', authorIds);
-      console.log('GET /api/comments: regular users fetch -> count=', (usersRes.data ?? []).length, 'error=', usersRes.error);
       usersData = usersRes.data;
       usersErr = usersRes.error;
     }

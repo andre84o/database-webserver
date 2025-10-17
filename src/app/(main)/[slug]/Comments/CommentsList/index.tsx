@@ -1,7 +1,6 @@
-// Fil: app/components/Comments/CommentsList.tsx
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/utils/supabase/browser.client";
 
 type Comment = {
@@ -22,7 +21,6 @@ export default function CommentsList({
   postId: number;
   postOwnerId?: string | null;
 }) {
-  // Svenska: Samma state som tidigare
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -30,7 +28,15 @@ export default function CommentsList({
   const [offset, setOffset] = useState(0);
   const supabaseRef = useRef<any>(null);
 
-  // Svenska: Relativ tid i stil med sociala medier
+  const [replyToRootId, setReplyToRootId] = useState<number | null>(null);
+  const [replyHintName, setReplyHintName] = useState<string>("");
+  const [replyDrafts, setReplyDrafts] = useState<Record<number, string>>({});
+  const replyInputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingContent, setEditingContent] = useState("");
+  const editInputRef = useRef<HTMLTextAreaElement | null>(null);
+
   const relativeTime = (iso: string) => {
     const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
     const diff = Date.now() - new Date(iso).getTime();
@@ -44,9 +50,8 @@ export default function CommentsList({
     return rtf.format(-weeks, "week");
   };
 
-  // Svenska: Avatar med initialer som reserv
   const Avatar = ({ name, src }: { name?: string; src?: string }) => {
-    const safe = name && name.trim().length > 0 ? name : "Unknown"; // Svenska: visa username, annars "Unknown"
+    const safe = name && name.trim().length > 0 ? name : "Unknown";
     const initials =
       safe
         .split(" ")
@@ -123,37 +128,60 @@ export default function CommentsList({
     };
   }, [postId, limit, offset]);
 
-  // client-side fallback: if comments don't include users, fetch missing usernames in browser
+  const revalidateComments = async () => {
+    try {
+      const res = await fetch(`/api/comments?post_id=${postId}&limit=${limit}&offset=${offset}`);
+      if (!res.ok) return;
+      const json = await res.json();
+      setComments((prev) => {
+        const map = new Map<number, Comment>();
+        prev.forEach((p) => map.set(p.id, p));
+        (json.data ?? []).forEach((c: Comment) => map.set(c.id, c));
+        return Array.from(map.values()).sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      });
+    } catch (e) {
+    }
+  };
+
+  const loadedUserIdsRef = useRef<Set<string>>(new Set());
   useEffect(() => {
-    const missingAuthorIds = Array.from(
+    const unknownIds = Array.from(
       new Set(
         comments
           .filter((c: any) => !c.users)
-          .map((c: any) => c.author_id)
-          .filter(Boolean)
+          .map((c: any) => String(c.author_id))
       )
-    );
-    if (missingAuthorIds.length === 0) return;
+    ).filter((id) => !loadedUserIdsRef.current.has(id));
+    if (unknownIds.length === 0) return;
+
     const supabase = createClient();
     (async () => {
       try {
         const { data: users } = await supabase
           .from("users")
           .select("id, username, avatar_url")
-          .in("id", missingAuthorIds as any);
+          .in("id", unknownIds as any);
         const map = new Map<string, any>();
-        (users ?? []).forEach((u: any) => map.set(String(u.id), u));
-        setComments((prev) => prev.map((c) => ({ ...(c as any), users: c.users ?? map.get(String(c.author_id)) ?? null })));
+        (users ?? []).forEach((u: any) => {
+          map.set(String(u.id), u);
+          loadedUserIdsRef.current.add(String(u.id));
+        });
+        setComments((prev) =>
+          prev.map((c) => ({
+            ...(c as any),
+            users: c.users ?? map.get(String(c.author_id)) ?? null,
+          }))
+        );
       } catch (e) {
-        // ignore fallback errors
-        console.error('client-side users fetch error', e);
+        console.error("client-side users fetch error", e);
       }
     })();
   }, [comments]);
 
   const loadMore = () => setOffset((o) => o + limit);
 
-  // Svenska: Optimistiska mutationer
   const handleDelete = async (commentId: number) => {
     const prev = comments;
     setComments((c) => c.filter((x) => x.id !== commentId));
@@ -164,6 +192,7 @@ export default function CommentsList({
       alert("Could not delete comment");
       setComments(prev);
     }
+    revalidateComments();
   };
 
   const handleEdit = async (id: number, newContent: string) => {
@@ -190,19 +219,60 @@ export default function CommentsList({
             : cm
         )
       );
+      revalidateComments();
     } else {
       alert("Could not edit comment");
       setComments(prev);
     }
   };
 
-  // Svenska: Edit state
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editingContent, setEditingContent] = useState("");
+  const handleCreateReply = async (parentRootId: number, text: string) => {
+    const content = text.trim();
+    if (!content) return;
+
+    const tempId = -Math.floor(Math.random() * 1_000_000);
+    const optimistic: Comment = {
+      id: tempId,
+      post_id: postId,
+      parent_id: parentRootId,
+      author_id: userId ?? "unknown",
+      content,
+      created_at: new Date().toISOString(),
+      users: { username: "You", avatar_url: undefined },
+    };
+    setComments((c) => [optimistic, ...c]);
+
+    const res = await fetch(`/api/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        post_id: postId,
+        parent_id: parentRootId,
+        content,
+      }),
+    });
+
+    if (res.ok) {
+      const json = await res.json();
+      const inserted: Comment | undefined = json.data?.[0];
+      if (inserted)
+        setComments((c) => [inserted, ...c.filter((x) => x.id !== tempId)]);
+      setReplyDrafts((d) => ({ ...d, [parentRootId]: "" }));
+      setReplyToRootId(null);
+      setReplyHintName("");
+      revalidateComments();
+    } else {
+      setComments((c) => c.filter((x) => x.id !== tempId));
+      alert("Could not post reply");
+    }
+  };
 
   const startEdit = (c: Comment) => {
+    setReplyToRootId(null);
+    setReplyHintName("");
     setEditingId(c.id);
     setEditingContent(c.content);
+    setTimeout(() => editInputRef.current?.focus(), 0);
   };
 
   const submitEdit = (id: number) => {
@@ -210,26 +280,42 @@ export default function CommentsList({
     setEditingId(null);
   };
 
-  // Svenska: Root och replies
-  const rootComments = comments
-    .filter((c) => !c.parent_id)
-    .sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
+  useEffect(() => {
+    if (editingId) {
+      setTimeout(() => editInputRef.current?.focus(), 0);
+    }
+  }, [editingId]);
 
-  const childrenMap = new Map<number, Comment[]>();
-  comments
-    .filter((c) => c.parent_id)
-    .forEach((c) => {
-      const arr = childrenMap.get(c.parent_id as number) ?? [];
-      arr.push(c);
-      childrenMap.set(c.parent_id as number, arr);
-    });
+  const rootComments = useMemo(
+    () =>
+      comments
+        .filter((c) => !c.parent_id)
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        ),
+    [comments]
+  );
 
-  // Svenska: Enskild kommentar i social stil
-  const CommentBubble = ({ c }: { c: Comment }) => {
-    // Supabase may return the joined users as an object or as an array (depending on FK naming and RLS).
+  const childrenMap = useMemo(() => {
+    const m = new Map<number, Comment[]>();
+    comments
+      .filter((c) => c.parent_id)
+      .forEach((c) => {
+        const arr = m.get(c.parent_id as number) ?? [];
+        arr.push(c);
+        m.set(c.parent_id as number, arr);
+      });
+    return m;
+  }, [comments]);
+
+  useEffect(() => {
+    if (replyToRootId && !editingId) {
+      setTimeout(() => replyInputRef.current?.focus(), 0);
+    }
+  }, [replyToRootId, editingId]);
+
+  const CommentBubble = ({ c, rootId }: { c: Comment; rootId: number }) => {
     const rawUser = (c as any).users;
     let username: string | undefined = undefined;
     let avatar_url: string | undefined = undefined;
@@ -242,28 +328,40 @@ export default function CommentsList({
         avatar_url = rawUser.avatar_url;
       }
     }
+    const displayName =
+      username && username.trim().length > 0 ? username : "Unknown";
 
-    const displayName = username && username.trim().length > 0 ? username : "Unknown";
     return (
       <div className="flex gap-2">
-  <Avatar name={displayName} src={avatar_url ?? (c.users as any)?.avatar_url} />
+        <Avatar
+          name={displayName}
+          src={avatar_url ?? (c.users as any)?.avatar_url}
+        />
         <div className="flex-1">
           <div className="inline-block rounded-2xl bg-slate-100 px-3 py-2">
             <div className="flex items-baseline gap-2">
               <span className="font-semibold hover:underline cursor-pointer">
                 {displayName}
               </span>
-              {/* Svenska: Tog bort "Edited" enligt din önskan */}
             </div>
             <p className="text-[15px] leading-5 whitespace-pre-wrap">
               {c.content}
             </p>
           </div>
 
-          {/* Svenska: Actions-rad */}
           <div className="mt-1 flex items-center gap-3 text-xs text-slate-500">
             <button className="hover:underline">Like</button>
-            <button className="hover:underline">Reply</button>
+            <button
+              className="hover:underline"
+              onClick={() => {
+                setEditingId(null);
+                setReplyToRootId(rootId);
+                setReplyHintName(displayName);
+                setTimeout(() => replyInputRef.current?.focus(), 0);
+              }}
+            >
+              Reply
+            </button>
             <span>{relativeTime(c.created_at)}</span>
 
             {(userId === c.author_id || userId === postOwnerId) && (
@@ -286,10 +384,11 @@ export default function CommentsList({
             )}
           </div>
 
-          {/* Svenska: Editläge */}
           {editingId === c.id && (
             <div className="mt-2">
               <textarea
+                ref={editInputRef}
+                autoFocus
                 value={editingContent}
                 onChange={(e) => setEditingContent(e.target.value)}
                 className="w-full rounded-xl border border-slate-300 bg-white p-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
@@ -318,6 +417,56 @@ export default function CommentsList({
     );
   };
 
+  const ReplyForm = ({ parentRootId }: { parentRootId: number }) => {
+    const value = replyDrafts[parentRootId] ?? "";
+    return (
+      <div className="mt-2 ml-11">
+        <div className="flex items-start gap-2 rounded-2xl bg-slate-100 px-3 py-2">
+          <textarea
+            ref={replyInputRef}
+            autoFocus
+            value={value}
+            onChange={(e) =>
+              setReplyDrafts((d) => ({ ...d, [parentRootId]: e.target.value }))
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleCreateReply(parentRootId, value);
+              }
+            }}
+            rows={2}
+            className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+            placeholder={
+              replyHintName
+                ? `Reply to ${replyHintName}...`
+                : "Write a reply..."
+            }
+            aria-label="Reply input"
+          />
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          <button
+            onClick={() => handleCreateReply(parentRootId, value)}
+            className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
+          >
+            Reply
+          </button>
+          <button
+            onClick={() => {
+              setReplyToRootId(null);
+              setReplyHintName("");
+              setReplyDrafts((d) => ({ ...d, [parentRootId]: "" }));
+            }}
+            className="rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-2xl mx-auto mt-6">
       <h4 className="mb-3 font-semibold">Comments</h4>
@@ -331,25 +480,28 @@ export default function CommentsList({
           <div className="text-sm text-slate-500">No comments yet</div>
         )}
 
-        {rootComments.map((c) => {
-          const replies = (childrenMap.get(c.id) ?? []).sort(
+        {rootComments.map((root) => {
+          const replies = (childrenMap.get(root.id) ?? []).sort(
             (a, b) =>
               new Date(a.created_at).getTime() -
               new Date(b.created_at).getTime()
           );
 
           return (
-            <div key={c.id}>
-              <CommentBubble c={c} />
-              {replies.length > 0 && (
-                <div className="mt-2 ml-11 border-l border-slate-200 pl-3 space-y-3">
-                  {replies.map((r) => (
-                    <div key={r.id}>
-                      <CommentBubble c={r} />
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div key={root.id}>
+              <CommentBubble c={root} rootId={root.id} />
+
+              <div className="mt-2 ml-11 border-l border-slate-200 pl-3 space-y-3">
+                {replies.map((r) => (
+                  <div key={r.id}>
+                    <CommentBubble c={r} rootId={root.id} />
+                  </div>
+                ))}
+
+                {replyToRootId === root.id && (
+                  <ReplyForm parentRootId={root.id} />
+                )}
+              </div>
             </div>
           );
         })}
@@ -357,7 +509,7 @@ export default function CommentsList({
 
       <div className="mt-4 flex justify-center">
         <button
-          onClick={loadMore}
+          onClick={() => setOffset((o) => o + limit)}
           className="rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium hover:bg-slate-200"
         >
           Load more
