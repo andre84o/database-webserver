@@ -17,6 +17,7 @@ export const CreatePost = async (formData: FormData) => {
 
   const title = parsed.title as string
   const content = parsed.content as string | undefined
+  const category = (formData.get('category') as string) || null
 
   const {
     data: { user },
@@ -48,8 +49,8 @@ export const CreatePost = async (formData: FormData) => {
 
   const { data: inserted, error: insertErr } = await svc
     .from('posts')
-    .insert({ title, content, slug, image_url, user_id: userId })
-    .select('id, image_url')
+    .insert({ title, content, slug, image_url, user_id: userId, category })
+    .select('id, image_url, category')
     .maybeSingle();
 
   if (insertErr) throw insertErr;

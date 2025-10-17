@@ -1,13 +1,25 @@
-'use client';
+"use client";
+
+import { useTransition } from "react";
 import { LogOut } from "@/actions/log-out";
 
-const LogOutButton = () => {
-    const handleClick = () => {
-         LogOutButton();
-    }
-    return (
-        <button onClick={handleClick} className="button-secondary">Log Out</button>
-    )
-}
+export default function LogOutButton() {
+  const [pending, startTransition] = useTransition();
 
-export default LogOutButton;
+  return (
+    <form
+      action={async () => {
+        startTransition(() => {});
+        await LogOut();
+      }}
+    >
+      <button
+        type="submit"
+        className="button-secondary cursor-pointer"
+        disabled={pending}
+      >
+        {pending ? "Logging out..." : "Log Out"}
+      </button>
+    </form>
+  );
+}

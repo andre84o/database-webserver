@@ -1,12 +1,14 @@
 export const dynamic = "force-dynamic";
 import { getSinglePost } from "@/utils/supabase/queries";
 import EditForm from "./EditForm";
-import { EditPost } from "@/actions/edit.post";
 
 
 
 const EditPage = async (props: any) => {
-  const { slug } = props.params as { slug: string };
+  const awaitedProps = await props;
+  const paramsPromise = (awaitedProps as any).params;
+  const params = await paramsPromise;
+  const { slug } = params as { slug: string };
   const { data, error } = await getSinglePost(slug);
 
   if (!data) {
@@ -20,14 +22,13 @@ const EditPage = async (props: any) => {
   return (
     <div className="w-2xl p-4 m-auto border-gray-700 border-1 mt-4 rounded-2xl">
       <h1 className="font-bold text-xl mb-4">Edit Post</h1>
-  <form action={EditPost}>
         <EditForm
           postId={data.id}
           initialTitle={data.title}
           initialContent={data.content}
           initialImageUrl={data.image_url}
+          initialCategory={data.category ?? null}
         />
-      </form>
     </div>
   );
 };

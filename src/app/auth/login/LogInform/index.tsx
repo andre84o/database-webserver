@@ -1,6 +1,7 @@
 "use client";
 
-import { LogIn } from "@/actions/log-in";
+import { createClient } from '@/utils/supabase/browser.client';
+import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { logInSchema } from "@/actions/schemas";
@@ -13,8 +14,18 @@ const LoginForm = () => {
     resolver: zodResolver(logInSchema)
   })
 
+  const router = useRouter();
+
   const { mutate, isPending, error } = useMutation({
-    mutationFn: LogIn,
+    mutationFn: async (values: any) => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithPassword(values);
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      router.replace('/');
+    }
   })
 
   return (

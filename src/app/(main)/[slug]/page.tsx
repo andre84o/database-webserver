@@ -5,8 +5,13 @@ import Link from "next/link";
 import DeletePost from "@/actions/delete.post";
 
 const SinglePost = async (props: any) => {
-  const { slug } = props.params as { slug: string };
-  const { data, error } = await getSinglePost(slug);
+  const awaitedProps = await props;
+  const paramsPromise = (awaitedProps as any).params;
+  const params = await paramsPromise;
+  const { slug } = params as { slug: string };
+  const res = await getSinglePost(slug);
+  const data = (res as any).data ?? res;
+  const error = (res as any).error ?? null;
 
   const supabase = await createClient();
   const {
@@ -35,24 +40,26 @@ const SinglePost = async (props: any) => {
 
             <div className="mb-3 flex items-center justify-between">
               <span className="inline-block bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">
-                Featured
+                {data.category ?? "Featured"}
               </span>
               <div className="text-sm text-gray-600">
                 {data.users?.username ?? "Unknown"}
               </div>
             </div>
-
             <h1 className="font-extrabold text-2xl md:text-3xl mb-2">
               {data.title}
             </h1>
             {isOwner && (
               <div className="mt-4 flex gap-2">
-                <Link href={`/${data.slug}/edit`} className="button-quaternary">
+                <Link
+                  href={`/${data.slug}/edit`}
+                  className="button-quaternary hover:bg-green-50 text-green-600 border-green-600"
+                >
                   Edit
                 </Link>
                 <form action={"/api/posts/delete"} method="post">
                   <input type="hidden" name="postId" value={String(data.id)} />
-                  <button type="submit" className="button-quaternary">
+                  <button type="submit" className="button-quaternary hover:bg-red-50 text-red-600 border-red-600">
                     Delete
                   </button>
                 </form>
