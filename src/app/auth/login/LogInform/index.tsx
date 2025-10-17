@@ -62,7 +62,7 @@ const LoginForm = () => {
         </fieldset>
 
         <button
-          className="button-secondary w-1/2 m-auto mb-4"
+          className="button-secondary w-1/2 m-auto mb-4 hover:bg-blue-300"
           disabled={isPending}
         >
           {isPending ? "Logging you in!" : "Log in!"}

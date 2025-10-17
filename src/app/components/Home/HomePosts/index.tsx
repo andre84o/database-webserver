@@ -73,10 +73,18 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                   </div>
 
                   {/* Content below */}
-                  <div className="p-8 flex-1 flex flex-col justify-center">
-                    <span className="inline-block bg-amber-300 text-black text-xs px-3 py-1 rounded-full mb-3">{data[0].category ?? 'Featured'}</span>
-                    <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2">{data[0].title}</h2>
-                    <p className="text-neutral-600 mb-4">{data[0].users?.username ?? 'Unknown'}</p>
+                  <div className="p-8 flex-1 flex flex-col justify-between">
+                    <div>
+                      <span className="inline-block bg-amber-300 text-black text-xs px-3 py-1 rounded-full mb-3">{data[0].category ?? 'Featured'}</span>
+                      <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2">{data[0].title}</h2>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-end gap-2 text-sm text-neutral-600">
+                      <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-xs text-white">
+                        {data[0].users?.username ? data[0].users.username.charAt(0).toUpperCase() : "U"}
+                      </div>
+                      <div>{data[0].users?.username ?? "Unknown"}</div>
+                    </div>
                   </div>
                 </article>
               </Link>

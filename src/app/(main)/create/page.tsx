@@ -40,7 +40,11 @@ const CreatePage = async () => {
           <label className="block mb-1 font-medium" htmlFor="category">
             Category
           </label>
-          <select id="category" name="category" className="w-full border border-gray-300 rounded px-3 py-2">
+          <select
+            id="category"
+            name="category"
+            className="w-full border border-gray-300 rounded px-3 py-2"
+          >
             <option value="">Select a category</option>
             <option>Food</option>
             <option>Politics</option>
@@ -54,7 +58,7 @@ const CreatePage = async () => {
         </div>
 
         <div>
-          <button className="button-primary" type="submit">
+          <button className="button-quaternary bg-green-100 hover:bg-green-200 border-green-500" type="submit">
             Create
           </button>
         </div>

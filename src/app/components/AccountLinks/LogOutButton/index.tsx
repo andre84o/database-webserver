@@ -15,7 +15,7 @@ export default function LogOutButton() {
     >
       <button
         type="submit"
-        className="button-secondary cursor-pointer"
+        className="button-secondary cursor-pointer hover:bg-blue-300"
         disabled={pending}
       >
         {pending ? "Logging out..." : "Log Out"}
