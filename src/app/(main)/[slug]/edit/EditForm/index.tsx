@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   postId: number;
   initialTitle?: string | null;
   initialContent?: string | null;
   initialImageUrl?: string | null;
-  action: (formData: FormData) => Promise<any>;
 };
 
 const EditForm = ({
@@ -15,8 +15,8 @@ const EditForm = ({
   initialTitle,
   initialContent,
   initialImageUrl,
-  action,
 }: Props) => {
+  const router = useRouter();
   const [title, setTitle] = useState(initialTitle ?? "");
   const [content, setContent] = useState(initialContent ?? "");
   const [imagePreview, setImagePreview] = useState<string | null>(
@@ -24,15 +24,33 @@ const EditForm = ({
   );
   const [removeImage, setRemoveImage] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const res = await fetch("/api/posts/edit", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || `Request failed: ${res.status}`);
+      }
+      // redirect to home
+      router.push("/");
+    } catch (err: any) {
+      setError(err?.message ?? "An error occurred");
+      setLoading(false);
+    }
+  };
 
   return (
-    <form
-      action={
-        action as unknown as string | ((formData: FormData) => Promise<any>)
-      }
-      onSubmit={() => setLoading(true)}
-      className="flex flex-col gap-4"
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <input type="hidden" name="postId" value={String(postId)} />
       <label className="flex flex-col">
         <span className="font-medium">Title</span>

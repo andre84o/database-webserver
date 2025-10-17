@@ -2,10 +2,7 @@
 import { getSinglePost } from "@/utils/supabase/queries";
 import EditForm from "./EditForm";
 
-export async function handleEdit(formData: FormData) {
-  const { EditPost } = await import("@/actions/edit-post");
-  await EditPost(formData);
-}
+
 
 const EditPage = async ({ params }: { params: { slug: string } }) => {
   const { slug } = await params;
@@ -27,7 +24,6 @@ const EditPage = async ({ params }: { params: { slug: string } }) => {
         initialTitle={data.title}
         initialContent={data.content}
         initialImageUrl={data.image_url}
-        action={handleEdit}
       />
     </div>
   );
