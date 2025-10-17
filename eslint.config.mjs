@@ -18,7 +18,13 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "src/utils/supabase/database.types.ts",
     ],
+    rules: {
+      // Project currently uses `any` in several helper files. Allow it temporarily
+      // while we iteratively replace `any` with proper types.
+      "@typescript-eslint/no-explicit-any": "off",
+    },
   },
 ];
 

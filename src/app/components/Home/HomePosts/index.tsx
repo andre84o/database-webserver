@@ -57,26 +57,26 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
         </label>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
         {data && data.length > 0 ? (
           <>
             {data[0] && (
-              <Link href={`/${data[0].slug}`} key={data[0].id} className="lg:col-span-2 lg:row-span-2 block">
-                <article className="group relative overflow-hidden rounded-3xl shadow-xl bg-white/3 hover:shadow-2xl transition-shadow duration-300">
-                  <div className="relative lg:flex lg:items-stretch">
-                    <div className="lg:flex-1 overflow-hidden h-72 lg:h-auto">
-                      {data[0].image_url ? (
-                        <img src={data[0].image_url} alt={data[0].title} className="w-full h-72 lg:h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-72 bg-gray-200" />
-                      )}
-                    </div>
+              <Link href={`/${data[0].slug}`} key={data[0].id} className="lg:col-span-2 lg:row-span-2 block h-full">
+                <article className="group relative overflow-hidden rounded-3xl shadow-xl bg-white/3 hover:shadow-2xl transition-shadow duration-300 h-full flex flex-col">
+                  {/* Image on top */}
+                  <div className="w-full overflow-hidden">
+                    {data[0].image_url ? (
+                      <img src={data[0].image_url} alt={data[0].title} className="w-full h-56 md:h-72 object-cover" />
+                    ) : (
+                      <div className="w-full h-56 md:h-72 bg-gray-200" />
+                    )}
+                  </div>
 
-                    <div className="lg:flex-1 p-8 flex flex-col justify-center">
-                      <span className="inline-block bg-amber-300 text-black text-xs px-3 py-1 rounded-full mb-3">{data[0].category ?? 'Featured'}</span>
-                      <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2">{data[0].title}</h2>
-                      <p className="text-neutral-600 mb-4">{data[0].users?.username ?? 'Unknown'}</p>
-                    </div>
+                  {/* Content below */}
+                  <div className="p-8 flex-1 flex flex-col justify-center">
+                    <span className="inline-block bg-amber-300 text-black text-xs px-3 py-1 rounded-full mb-3">{data[0].category ?? 'Featured'}</span>
+                    <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2">{data[0].title}</h2>
+                    <p className="text-neutral-600 mb-4">{data[0].users?.username ?? 'Unknown'}</p>
                   </div>
                 </article>
               </Link>

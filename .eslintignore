@@ -1,0 +1,2 @@
+# Ignore generated or large files that confuse the parser
+src/utils/supabase/database.types.ts

@@ -9,7 +9,9 @@ const EditPage = async (props: any) => {
   const paramsPromise = (awaitedProps as any).params;
   const params = await paramsPromise;
   const { slug } = params as { slug: string };
-  const { data, error } = await getSinglePost(slug);
+  const res = await getSinglePost(slug);
+  const data = (res as any).data ?? res;
+  const error = (res as any).error ?? null;
 
   if (!data) {
     return (

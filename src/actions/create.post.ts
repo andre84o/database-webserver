@@ -34,7 +34,7 @@ export const CreatePost = async (formData: FormData) => {
     image_url = await uploadImages(image)
   }
 
-  let baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  const baseSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
   let slug = baseSlug
   let counter = 1
   while (true) {
