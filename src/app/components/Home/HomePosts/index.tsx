@@ -1,4 +1,3 @@
-// Fil: app/components/Home/HomePosts.tsx
 "use client";
 import { getHomePosts } from "@/utils/supabase/queries";
 import Link from "next/link";
@@ -19,6 +18,11 @@ type PostItem = {
 
 const HomePosts = ({ posts }: { posts: PostItem[] }) => {
   const supabase = createClient();
+
+  const excerptWords = (s: string | undefined | null, n = 9) => {
+    const parts = String(s ?? "").split(/\s+/).filter(Boolean);
+    return parts.length <= n ? parts.join(" ") : parts.slice(0, n).join(" ") + "...";
+  };
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [category, setCategory] = useState<string>("");
@@ -62,9 +66,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
           </select>
         </label>
       </div>
-
-      {/* Svenska: auto-rows-fr ger lika höga rader. Vi fyller dem med h-full på varje kort. */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+  <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
         {data && data.length > 0 ? (
           <>
             {data[0] && (
@@ -73,19 +75,19 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                 key={data[0].id}
                 className="lg:col-span-2 lg:row-span-2 block h-full"
               >
-                <article className="group relative overflow-hidden rounded-3xl shadow-xl bg-white/3 hover:shadow-2xl transition-shadow duration-300 h-full flex flex-col">
+                <article className="group relative overflow-hidden rounded-3xl shadow-xl bg-white hover:shadow-2xl transition-shadow duration-300 h-full flex flex-col">
                   <div className="w-full overflow-hidden">
                     {data[0].image_url ? (
                       <img
                         src={data[0].image_url}
                         alt={data[0].title}
-                        className="w-full h-56 md:h-72 object-cover"
+                        className="w-full h-40 sm:h-56 md:h-72 object-cover"
                       />
                     ) : (
-                      <div className="w-full h-56 md:h-72 bg-gray-200" />
+                      <div className="w-full h-40 sm:h-56 md:h-72 bg-gray-200" />
                     )}
                   </div>
-                  <div className="p-8 flex-1 flex flex-col justify-between">
+                  <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between">
                     <div>
                       <span className="inline-block bg-[var(--brand-center)] text-white text-xs px-3 py-1 rounded-full mb-3">
                         {data[0].category ?? "Featured"}
@@ -100,7 +102,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                       )}
                     </div>
 
-                    <div className="mt-4 flex items-center justify-end gap-2 text-sm text-neutral-600">
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-2 text-sm text-neutral-600">
                       <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-xs text-white">
                         {data[0].users?.username
                           ? data[0].users.username.charAt(0).toUpperCase()
@@ -117,20 +119,20 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
               <Link
                 key={id}
                 href={`/${slug}`}
-                className="block h-full rounded-2xl overflow-hidden bg-white shadow-sm"
+                className="block h-full rounded-2xl overflow-hidden"
               >
-                <article className="relative overflow-hidden rounded-2xl shadow-md bg-white/50 hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
+                <article className="relative overflow-hidden rounded-2xl shadow-md bg-white hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
                   {image_url ? (
                     <img
                       src={image_url}
                       alt={title}
-                      className="w-full h-40 object-cover"
+                      className="w-full h-32 sm:h-40 object-cover"
                     />
                   ) : (
-                    <div className="w-full h-40 bg-gray-200" />
+                    <div className="w-full h-32 sm:h-40 bg-gray-200" />
                   )}
 
-                  <div className="p-4 flex flex-col flex-1">
+                  <div className="p-3 sm:p-4 flex flex-col flex-1">
                     <span className="inline-flex w-fit flex-none whitespace-nowrap text-xs text-white bg-[var(--brand-center)] px-2 py-1 rounded-full mb-2">
                       {(data as any).find((p: any) => p.id === id)?.category ??
                         "Featured"}
@@ -138,20 +140,13 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                     <h3 className="font-semibold text-lg mb-2 text-neutral-900">
                       {title}
                     </h3>
-                    <p className="text-sm text-neutral-600 line-clamp-2">
-                      {String(
-                        (data as any).find((p: any) => p.id === id)?.content ??
-                          ""
-                      ).slice(0, 120)}
-                      {(
-                        (data as any).find((p: any) => p.id === id)?.content ??
-                        ""
-                      ).length > 120
-                        ? "..."
-                        : ""}
+                    <p className="text-sm text-neutral-600 mb-3">
+                      {excerptWords(
+                        (data as any).find((p: any) => p.id === id)?.content ?? "",
+                        9
+                      )}
                     </p>
-                    <div className="mt-auto flex items-center justify-between text-sm text-neutral-600">
-                      {/* Svenska: mt-auto puttar raden till botten */}
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-sm text-neutral-600">
                       <div className="flex items-center gap-2">
                         <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-xs text-white">
                           {users?.username

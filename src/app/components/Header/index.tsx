@@ -2,7 +2,9 @@ import Link from "next/link";
 import Logo from "../Logo";
 import AccountLinks from "../AccountLinks";
 import SearchInput from "../Search";
+import MobileNav from "../MobileNav";
 import { createClient } from "@/utils/supabase/server-client";
+import Navigation from "../Navigation";
 
 export default async function Header() {
   let signedIn = false;
@@ -19,13 +21,7 @@ export default async function Header() {
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
           <Logo />
-          <nav className="hidden md:flex items-center gap-4 text-neutral-700">
-            <Link href="/" className="hover:text-neutral-900">Home</Link>
-            {signedIn && (
-              <Link href="/create" className="hover:text-neutral-900">Create</Link>
-            )}
-            <Link href="/about" className="hover:text-neutral-900">About</Link>
-          </nav>
+          <Navigation />
         </div>
 
         <div className="flex-1 mx-6">
@@ -35,7 +31,10 @@ export default async function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <AccountLinks />
+          <MobileNav />
+          <div className="hidden md:flex">
+            <AccountLinks />
+          </div>
         </div>
       </div>
     </header>

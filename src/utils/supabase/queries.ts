@@ -74,10 +74,11 @@ export const getSearchPosts = async (
   searchTerm: string,
   supabase: SupabaseClient<Database> = createClient()
 ) => {
-  return await supabase
-    .from("posts")
-    .select("title, slug")
-    .ilike("title", `${searchTerm}%`);
+  const q = supabase.from("posts").select(
+    "id, title, slug, content, user_id, users:users!posts_user_id_fkey(id, username)"
+  );
+
+  return await q.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
 };
 
 export type HomePostType = QueryData<ReturnType<typeof getHomePosts>>;
