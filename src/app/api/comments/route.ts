@@ -19,9 +19,6 @@ function createSupabase(req: NextRequest) {
     }
   );
 }
-
-// If NEXT/Node didn't populate process.env with the service role key (for example
-// when running `next start`), try to read it directly from .env or .env.local.
 function loadServiceRoleKeyFromEnvFiles() {
   if (process.env.SUPABASE_SERVICE_ROLE_KEY) return process.env.SUPABASE_SERVICE_ROLE_KEY;
   try {
@@ -42,7 +39,6 @@ function loadServiceRoleKeyFromEnvFiles() {
       }
     }
   } catch (e) {
-    // ignore
   }
   return undefined;
 }
@@ -56,7 +52,6 @@ export async function GET(req: NextRequest) {
 
   const supabase = createSupabase(req) as any;
   try {
-    // fetch comments first
     const { data, error } = await supabase
       .from("comments")
       .select(`id, post_id, parent_id, author_id, content, created_at, updated_at`)
@@ -69,16 +64,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message ?? error }, { status: 500 });
     }
 
-    // If there are comments, fetch the authors separately and merge username into each comment.
     const comments = (data ?? []) as any[];
     if (comments.length === 0) return NextResponse.json({ data: comments });
 
     const authorIds = Array.from(new Set(comments.map((c) => c.author_id).filter(Boolean)));
     if (authorIds.length === 0) return NextResponse.json({ data: comments });
 
-    // Try to fetch users via a service-role admin client when available.
-    // This ensures we can read the users table even if RLS prevents the regular
-    // server client (which uses request cookies/auth) from seeing those rows.
     let usersData: any = null;
     let usersErr: any = null;
     const serviceRoleKey = loadServiceRoleKeyFromEnvFiles();
@@ -101,7 +92,6 @@ export async function GET(req: NextRequest) {
 
     if (usersErr) {
       console.error('Supabase users select error:', usersErr);
-      // return comments without usernames rather than failing entirely
       const fallback = comments.map((c) => ({ ...c, users: null }));
       return NextResponse.json({ data: fallback });
     }
