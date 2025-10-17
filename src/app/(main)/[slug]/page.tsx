@@ -23,17 +23,24 @@ const SinglePost = async (props: any) => {
       {data && (
         <>
           <div className="w-2xl p-4 m-auto border-gray-700 border-1 mt-4 rounded-2xl">
-            <h2 className="font-bold text-xl">{data.title}</h2>
-            <p className="mt-4">Author {data.users?.username}</p>
-            {data.image_url && (
-              <div className="mt-4">
+            {data.image_url ? (
+              <div className="overflow-hidden rounded-2xl mb-4">
                 <img
                   src={data.image_url}
                   alt={data.title}
-                  className="max-h-80 w-full object-cover rounded"
+                  className="w-full h-72 object-cover"
                 />
               </div>
-            )}
+            ) : null}
+
+            <div className="mb-3 flex items-center justify-between">
+              <span className="inline-block bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">
+                Featured
+              </span>
+              <div className="text-sm text-gray-600">{data.users?.username ?? 'Unknown'}</div>
+            </div>
+
+            <h1 className="font-extrabold text-2xl md:text-3xl mb-2">{data.title}</h1>
             {isOwner && (
               <div className="mt-4 flex gap-2">
                 <Link href={`/${data.slug}/edit`} className="button-quaternary">
@@ -48,8 +55,8 @@ const SinglePost = async (props: any) => {
               </div>
             )}
           </div>
-          <div className="w-2xl p-4 m-auto border-gray-700 border-1 mt-4 rounded-2xl">
-            {data.content && <div>{data.content}</div>}
+          <div className="w-2xl p-6 m-auto mt-6 rounded-2xl bg-white shadow-sm">
+            {data.content && <div className="prose max-w-none">{data.content}</div>}
           </div>
         </>
       )}
