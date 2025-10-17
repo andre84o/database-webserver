@@ -1,4 +1,3 @@
-// Fil: app/components/HomePosts.tsx
 "use client";
 import { getHomePosts } from "@/utils/supabase/queries";
 import Link from "next/link";
@@ -20,7 +19,6 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   useEffect(() => {
-    // Svenska: Hämta inloggad användare för att kunna markera "isOwner"
     supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
     });
@@ -29,7 +27,6 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
   const { data } = useQuery<PostItem[]>({
     queryKey: ["home-posts"],
     queryFn: async () => {
-      // Svenska: Hämta poster från Supabase
       const { data, error } = await getHomePosts(supabase);
       if (error) throw error;
       return data;
@@ -41,10 +38,8 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
 
   return (
     <>
-      {/* Svenska: Gör rutnätet här, utanför .map, så alla kort lägger sig i 4 kolumner */}
       <div className="grid grid-cols-4 gap-4">
         {data?.map(({ id, slug, title, image_url, user_id, users }) => {
-          // Svenska: Kontroll om nuvarande användare äger posten
           const ownerIdFromJoin = users?.id ?? null;
           const isOwner =
             (currentUserId && user_id && currentUserId === user_id) ||
@@ -60,7 +55,6 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
             >
               {image_url ? (
                 <div className="mb-2">
-                  {/* Svenska: Exakt 50x50 px bild, beskär till ruta */}
                   <img
                     src={image_url}
                     alt={title}
