@@ -1,4 +1,3 @@
-// Fil: app/(main)/[slug]/edit/EditForm.tsx
 "use client";
 
 import { useRef, useState } from "react";

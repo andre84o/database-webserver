@@ -37,10 +37,14 @@ const SinglePost = async (props: any) => {
               <span className="inline-block bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">
                 Featured
               </span>
-              <div className="text-sm text-gray-600">{data.users?.username ?? 'Unknown'}</div>
+              <div className="text-sm text-gray-600">
+                {data.users?.username ?? "Unknown"}
+              </div>
             </div>
 
-            <h1 className="font-extrabold text-2xl md:text-3xl mb-2">{data.title}</h1>
+            <h1 className="font-extrabold text-2xl md:text-3xl mb-2">
+              {data.title}
+            </h1>
             {isOwner && (
               <div className="mt-4 flex gap-2">
                 <Link href={`/${data.slug}/edit`} className="button-quaternary">
@@ -48,7 +52,7 @@ const SinglePost = async (props: any) => {
                 </Link>
                 <form action={"/api/posts/delete"} method="post">
                   <input type="hidden" name="postId" value={String(data.id)} />
-                  <button type="submit" className="button-danger">
+                  <button type="submit" className="button-quaternary">
                     Delete
                   </button>
                 </form>
@@ -56,7 +60,9 @@ const SinglePost = async (props: any) => {
             )}
           </div>
           <div className="w-2xl p-6 m-auto mt-6 rounded-2xl bg-white shadow-sm">
-            {data.content && <div className="prose max-w-none">{data.content}</div>}
+            {data.content && (
+              <div className="prose max-w-none">{data.content}</div>
+            )}
           </div>
         </>
       )}

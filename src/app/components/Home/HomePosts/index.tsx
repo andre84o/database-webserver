@@ -41,7 +41,6 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {data && data.length > 0 ? (
           <>
-            {/* Featured post */}
             {data[0] && (
               <Link
                 href={`/${data[0].slug}`}
@@ -76,7 +75,6 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
               </Link>
             )}
 
-            {/* Remaining posts */}
             {data.slice(1).map(({ id, slug, title, image_url, users }) => (
               <Link
                 key={id}
