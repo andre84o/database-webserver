@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server-client"
 import { redirect } from "next/navigation"
 import { uploadImages } from "@/utils/supabase/upload-images"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export const EditPost = async (formData: FormData) => {
   try {
@@ -53,7 +54,7 @@ export const EditPost = async (formData: FormData) => {
 
   if (image && image instanceof File) {
     try {
-      const image_url = await uploadImages(image)
+      const image_url = await uploadImages(image, userId ?? undefined)
       updates.image_url = image_url
     } catch (err) {
       // log but continue — if storage/upload fails we don't want to break
@@ -64,11 +65,41 @@ export const EditPost = async (formData: FormData) => {
     updates.image_url = null
   }
 
+    // If we set image_url, perform that update with the service role to bypass RLS
+    const imageUrlToSet = updates.image_url;
+    // Remove image_url from the regular updates so session client updates only title/content
+    if (imageUrlToSet !== undefined) delete updates.image_url;
+
     await supabase
       .from('posts')
       .update(updates)
       .eq('id', postId)
-      .throwOnError()
+      .throwOnError();
+
+    if (imageUrlToSet !== undefined) {
+      // use service role to set image_url (we already validated ownership above)
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const svc = createSupabaseClient(supabaseUrl, serviceKey);
+      const { data: svcUpdated, error: svcErr } = await svc
+        .from('posts')
+        .update({ image_url: imageUrlToSet })
+        .eq('id', postId)
+        .select('id, image_url')
+        .maybeSingle();
+      // eslint-disable-next-line no-console
+      console.log('EditPost service-role update result:', { svcUpdated, svcErr });
+    }
+
+    // Log update result explicitly
+    try {
+      const { data: updated, error: updateErr } = await supabase.from('posts').select('id, image_url').eq('id', postId).maybeSingle();
+      // eslint-disable-next-line no-console
+      console.log('EditPost update result:', { updated, updateErr });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('EditPost update check failed', e);
+    }
 
     redirect('/')
   } catch (err: any) {

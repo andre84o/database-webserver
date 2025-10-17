@@ -16,7 +16,6 @@ const EditForm = ({
   initialContent,
   initialImageUrl,
 }: Props) => {
-  // Svenska: Lokal state för förhandsvisning och "removeImage"-flagga
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialImageUrl ?? null
   );

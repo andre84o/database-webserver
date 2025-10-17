@@ -14,7 +14,6 @@ export default function Header() {
         <SearchInput />
         <AccountLinks />
       </header>
-      <div className="mt-4 mx-auto w-[80%] border-b-4"></div>
     </>
   );
 }

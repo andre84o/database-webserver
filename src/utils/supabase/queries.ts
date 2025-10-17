@@ -11,7 +11,6 @@ export const getHomePosts = async (supabase?: any) => {
       )
       .order("created_at", { ascending: false });
   } catch (err: any) {
-    // fallback if image_url doesn't exist (SQLSTATE 42703)
     if (err?.code === "42703") {
       return await client
         .from("posts")

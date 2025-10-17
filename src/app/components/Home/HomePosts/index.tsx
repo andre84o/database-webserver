@@ -11,8 +11,8 @@ type PostItem = {
   slug: string;
   title: string;
   image_url?: string | null;
-  user_id?: string | null; 
-  users?: { id?: string; username?: string } | null; 
+  user_id?: string | null;
+  users?: { id?: string; username?: string } | null;
 };
 
 const HomePosts = ({ posts }: { posts: PostItem[] }) => {
@@ -20,6 +20,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   useEffect(() => {
+    // Svenska: Hämta inloggad användare för att kunna markera "isOwner"
     supabase.auth.getUser().then(({ data }) => {
       setCurrentUserId(data.user?.id ?? null);
     });
@@ -28,6 +29,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
   const { data } = useQuery<PostItem[]>({
     queryKey: ["home-posts"],
     queryFn: async () => {
+      // Svenska: Hämta poster från Supabase
       const { data, error } = await getHomePosts(supabase);
       if (error) throw error;
       return data;
@@ -38,49 +40,54 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
   });
 
   return (
-    <div>
-  {data?.map(({ id, slug, title, image_url, user_id, users }) => {
-        const ownerIdFromJoin = users?.id ?? null;
-        const isOwner =
-          (currentUserId && user_id && currentUserId === user_id) ||
-          (currentUserId &&
-            ownerIdFromJoin &&
-            currentUserId === ownerIdFromJoin);
+    <>
+      {/* Svenska: Gör rutnätet här, utanför .map, så alla kort lägger sig i 4 kolumner */}
+      <div className="grid grid-cols-4 gap-4">
+        {data?.map(({ id, slug, title, image_url, user_id, users }) => {
+          // Svenska: Kontroll om nuvarande användare äger posten
+          const ownerIdFromJoin = users?.id ?? null;
+          const isOwner =
+            (currentUserId && user_id && currentUserId === user_id) ||
+            (currentUserId &&
+              ownerIdFromJoin &&
+              currentUserId === ownerIdFromJoin);
 
-        return (
-          <Link
-            href={`/${slug}`}
-            className="block border-1 rounded-xl mt-4 p-4"
-            key={id}
-          >
-            {/** Show image if present */}
-            {/** Using the image_url from the posts row */}
-            {/** eslint-disable-next-line @next/next/no-img-element */}
-            {/** The image may be a public URL from Supabase storage */}
-            {image_url ? (
-              <div className="mb-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={image_url} alt={title} className="max-h-36 w-full object-cover rounded" />
+          return (
+            <Link
+              key={id}
+              href={`/${slug}`}
+              className="block mt-4 p-4 border rounded-xl"
+            >
+              {image_url ? (
+                <div className="mb-2">
+                  {/* Svenska: Exakt 50x50 px bild, beskär till ruta */}
+                  <img
+                    src={image_url}
+                    alt={title}
+                    className="w-[250px] h-[200px] object-cover rounded-none"
+                  />
+                </div>
+              ) : null}
+
+              <h2 className="font-bold text-xl">{title}</h2>
+
+              <div className="text-right">
+                by{" "}
+                <span
+                  className={
+                    isOwner
+                      ? "bg-slate-200/60 border border-slate-300 text-slate-700 px-2 py-[2px] rounded-md text-xs"
+                      : ""
+                  }
+                >
+                  {users?.username ?? "Unknown"}
+                </span>
               </div>
-            ) : null}
-            <h2 className="font-bold text-xl">{title}</h2>
-
-            <div className="text-right">
-              by{" "}
-              <span
-                className={
-                  isOwner
-                    ? "bg-slate-200/60 border border-slate-300 text-slate-700 px-2 py-[2px] rounded-md text-xs"
-                    : ""
-                }
-              >
-                {users?.username ?? "Unknown"}
-              </span>
-            </div>
-          </Link>
-        );
-      })}
-    </div>
+            </Link>
+          );
+        })}
+      </div>
+    </>
   );
 };
 
