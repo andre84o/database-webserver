@@ -10,6 +10,7 @@ type PostItem = {
   id: number;
   slug: string;
   title: string;
+  image_url?: string | null;
   user_id?: string | null; 
   users?: { id?: string; username?: string } | null; 
 };
@@ -38,7 +39,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
 
   return (
     <div>
-      {data?.map(({ id, slug, title, user_id, users }) => {
+  {data?.map(({ id, slug, title, image_url, user_id, users }) => {
         const ownerIdFromJoin = users?.id ?? null;
         const isOwner =
           (currentUserId && user_id && currentUserId === user_id) ||
@@ -52,6 +53,16 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
             className="block border-1 rounded-xl mt-4 p-4"
             key={id}
           >
+            {/** Show image if present */}
+            {/** Using the image_url from the posts row */}
+            {/** eslint-disable-next-line @next/next/no-img-element */}
+            {/** The image may be a public URL from Supabase storage */}
+            {image_url ? (
+              <div className="mb-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={image_url} alt={title} className="max-h-36 w-full object-cover rounded" />
+              </div>
+            ) : null}
             <h2 className="font-bold text-xl">{title}</h2>
 
             <div className="text-right">
