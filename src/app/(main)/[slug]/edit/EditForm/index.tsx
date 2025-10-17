@@ -21,12 +21,9 @@ const EditForm = ({
   );
   const [removeImage, setRemoveImage] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  // Svenska: Klick på krysset tar bort förhandsvisningen och markerar remove
   const handleRemoveImage = () => {
     setImagePreview(null);
     setRemoveImage(true);
-    // Svenska: Nollställ vald fil om någon valdes
     if (fileRef.current) {
       fileRef.current.value = "";
     }
@@ -34,7 +31,6 @@ const EditForm = ({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Svenska: Skicka med postId till server action */}
       <input type="hidden" name="postId" value={String(postId)} />
 
       <label className="flex flex-col">
@@ -58,7 +54,6 @@ const EditForm = ({
       <label className="flex flex-col">
         <span className="font-medium">Image</span>
 
-        {/* Svenska: Bildförhandsvisning med kryss-ikon uppe till höger */}
         {imagePreview && (
           <div className="relative mb-2 inline-block">
             <img
@@ -71,7 +66,6 @@ const EditForm = ({
               aria-label="Remove image"
               onClick={handleRemoveImage}
               className="absolute top-2 right-2 rounded-full px-2 h-6 inline-flex items-center justify-center text-white bg-black/60 hover:bg-black/70 text-xs"
-              // Svenska: Visar ett litet kryss
               title="Remove image"
             >
               ×
@@ -79,7 +73,6 @@ const EditForm = ({
           </div>
         )}
 
-        {/* Svenska: Filinput. Vid val av ny fil avmarkeras removeImage automatiskt */}
         <input
           ref={fileRef}
           type="file"
@@ -88,7 +81,7 @@ const EditForm = ({
           onChange={(e) => {
             const file = e.currentTarget.files?.[0];
             if (file) {
-              const maxBytes = 5 * 1024 * 1024; // 5 MB
+              const maxBytes = 5 * 1024 * 1024;
               if (file.size > maxBytes) {
                 alert(
                   "File is too large (max 5 MB). Please choose a smaller file."
@@ -97,12 +90,11 @@ const EditForm = ({
                 return;
               }
               setImagePreview(URL.createObjectURL(file));
-              setRemoveImage(false); // Svenska: ny fil => vi tar inte bort bilden
+              setRemoveImage(false); 
             }
           }}
         />
 
-        {/* Svenska: Dolt fält som bara skickas om vi tagit bort bilden */}
         {removeImage && <input type="hidden" name="removeImage" value="on" />}
       </label>
 

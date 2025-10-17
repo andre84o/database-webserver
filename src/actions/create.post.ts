@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { postSchema } from "./schemas"
 import { z } from "zod"
 import { uploadImages } from "@/utils/supabase/upload-images"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export const CreatePost = async (formData: FormData) => {
   const parsed = postSchema.partial().parse({
@@ -41,10 +42,17 @@ export const CreatePost = async (formData: FormData) => {
     slug = `${baseSlug}-${counter++}`
   }
 
-  await supabase
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const svc = createSupabaseClient(supabaseUrl, serviceKey);
+
+  const { data: inserted, error: insertErr } = await svc
     .from('posts')
     .insert({ title, content, slug, image_url, user_id: userId })
-    .throwOnError()
+    .select('id, image_url')
+    .maybeSingle();
+
+  if (insertErr) throw insertErr;
 
   redirect('/')
 }

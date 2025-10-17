@@ -5,8 +5,8 @@ import { EditPost } from "@/actions/edit.post";
 
 
 
-const EditPage = async ({ params }: { params: { slug: string } }) => {
-  const { slug } = await params;
+const EditPage = async (props: any) => {
+  const { slug } = props.params as { slug: string };
   const { data, error } = await getSinglePost(slug);
 
   if (!data) {

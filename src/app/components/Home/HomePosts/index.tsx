@@ -58,7 +58,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                   <img
                     src={image_url}
                     alt={title}
-                    className="w-[250px] h-[200px] object-cover rounded-none"
+                    className="w-full h-[200px] object-cover rounded-none"
                   />
                 </div>
               ) : null}
