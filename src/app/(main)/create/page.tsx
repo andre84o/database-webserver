@@ -82,7 +82,6 @@ const CreatePage = () => {
             </label>
             <CustomSelect
               name="category"
-              onChange={() => { /*could be used to enable submit */ }}
               options={[
                 { value: "", label: "Select a category" },
                 { value: "Food", label: "Food" },
