@@ -16,16 +16,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://database-webserver.vercel.app/";
+const siteUrl = "https://database-webserver.vercel.app/";
 
 export const metadata: Metadata = {
   title: "Bixy",
   description: "Bixy Blog Application",
-  metadataBase: new URL("https://database-webserver.vercel.app/"),
-  icons: {
-    icon: "/logo-bixy.png",
-  },
+  metadataBase: new URL(siteUrl), 
+  icons: { icon: "/logo-bixy.png" },
   openGraph: {
     type: "website",
     url: "/",
@@ -44,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Bixy",
     description: "Bixy Blog Application",
-    images: ["/og-bixy.png"], 
+    images: ["/og-bixy.png"],
   },
   alternates: { canonical: "/" },
 };
