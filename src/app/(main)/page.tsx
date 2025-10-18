@@ -30,7 +30,7 @@ export default async function Home() {
               <Link
                 href="/about"
                 className="inline-block border border-white/20 text-white px-5 py-3 rounded-full text-base
-                max-[376px]:px-3 max-[376px]:py-2 max-[376px]:rounded-full max-[394px]:text-xs"
+                max-[396px]:px-3 max-[396px]:py-2 max-[396px]:rounded-full max-[396px]:text-xs"
               >
                 About
               </Link>
