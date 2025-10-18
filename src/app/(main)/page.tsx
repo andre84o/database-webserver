@@ -11,9 +11,9 @@ export default async function Home() {
   const { data, error } = await getHomePosts(supabase);
 
   return (
-    <div className="w-[90%] mx-auto mt-8">
+    <div className="w-[100%] mx-auto mt-8">
       <MobileSearchInline />
-      <section className="relative h-[60vh] md:h-[70vh] rounded-3xl overflow-hidden mb-12 bg-gradient-to-r from-gray-900 via-neutral-900 to-gray-800 text-white shadow-2xl">
+      <section className="relative h-[50vh] md:h-[70vh] w-full rounded-3xl overflow-hidden mb-12 mt-5 bg-gradient-to-r from-gray-900/50 via-neutral-700/100/30 to-purple-400/50 text-white shadow-2xl">
         <div className="h-full flex items-center">
           <div className="p-8 md:p-16 lg:p-24 max-w-3xl">
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-[1.1] sm:leading-tight mb-6 tracking-tight">
@@ -23,14 +23,14 @@ export default async function Home() {
               A premium collection of visual essays and recipes — elegantly
               designed, meticulously edited.
             </p>
-            <div className="flex gap-2 sm:gap-3">
+            <div className="flex gap-2 sm:gap-3 mt-10">
               <div className="transform-gpu scale-95 sm:scale-100">
                 <ExplorePostsLink />
               </div>
               <Link
                 href="/about"
-                className="inline-block border border-white/20 text-white px-5 py-3 rounded-full text-base
-                max-[396px]:px-3 max-[396px]:py-2 max-[396px]:rounded-full max-[396px]:text-xs"
+                className="inline-block bg-[#FFB9B3] hover:bg-[#BD807A] text-white text-2xl px-6 py-3 rounded-full font-semibold
+                shadow-2xl shadow-white max-[396px]:px-3 max-[396px]:py-2 max-[396px]:rounded-full max-[396px]:text-xs"
               >
                 About
               </Link>

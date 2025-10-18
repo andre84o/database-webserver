@@ -99,7 +99,7 @@ const MobileNav = () => {
       />
       <aside ref={panelRef} role="dialog" aria-modal="true" className={`fixed inset-0 z-[99999] pointer-events-none`}>
         <div className={`absolute inset-0 transform transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "translate-x-full"}`}>
-          <div className="absolute right-0 top-16 h-[calc(100vh-4rem)] w-[min(85vw,320px)] bg-white shadow-lg flex flex-col p-4 overflow-y-auto pointer-events-auto">
+          <div className="absolute right-0 top-10 h-[calc(100vh-4rem)] w-[min(85vw,320px)] bg-white shadow-lg flex flex-col p-4 overflow-y-auto pointer-events-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="text-lg font-bold">Menu</div>
               <button aria-label="Close menu" onClick={() => setOpen(false)} className="p-2 rounded-md text-neutral-700 hover:bg-slate-50">

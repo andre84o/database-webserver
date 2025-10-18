@@ -290,7 +290,7 @@ export default function SearchInput(): React.ReactElement {
                 await (refetch ? refetch() : Promise.resolve());
               } catch {}
             }}
-            className="ml-2 inline-flex items-center justify-center px-3 py-2 rounded-md bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition"
+            className="ml-2 inline-flex items-center justify-center px-3 py-2 rounded-md bg-[#735BFD] text-white text-sm font-medium hover:bg-[#9C8BFF] transition"
           >
             <Search size={16} />
           </button>
@@ -350,14 +350,16 @@ export function MobileSearchInline(): React.ReactElement {
               await (refetch ? refetch() : Promise.resolve());
             } catch {}
           }}
-          className="ml-2 inline-flex items-center justify-center px-3 py-2 rounded-md bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition"
+          className="ml-2 inline-flex items-center justify-center px-3 py-2 rounded-md bg-[#735BFD] text-white text-sm font-medium hover:bg-amber-600 transition"
         >
           <Search size={16} />
         </button>
       </div>
       <div className="mt-2 w-full">
         {debounced && debounced.trim().length < 2 ? (
-          <div className="bg-white border rounded-md p-3 text-sm text-neutral-500">Skriv minst 2 tecken för att söka</div>
+          <div className="bg-white border rounded-md p-3 text-sm text-neutral-500">
+            Skriv minst 2 tecken för att söka
+          </div>
         ) : null}
 
         {results && results.length > 0 && (
@@ -371,16 +373,24 @@ export function MobileSearchInline(): React.ReactElement {
                   setUserInput("");
                 }}
               >
-                <div className="font-medium text-sm text-neutral-900">{r.title}</div>
-                <div className="text-xs text-neutral-600">{excerpt(r.content, 18)}</div>
-                <div className="text-xs text-neutral-500 mt-1">{r.users?.username ?? "Unknown"}</div>
+                <div className="font-medium text-sm text-neutral-900">
+                  {r.title}
+                </div>
+                <div className="text-xs text-neutral-600">
+                  {excerpt(r.content, 18)}
+                </div>
+                <div className="text-xs text-neutral-500 mt-1">
+                  {r.users?.username ?? "Unknown"}
+                </div>
               </Link>
             ))}
           </div>
         )}
 
         {results && results.length === 0 && debounced && (
-          <div className="bg-white border rounded-md p-3 text-sm text-neutral-500">Inga träffar</div>
+          <div className="bg-white border rounded-md p-3 text-sm text-neutral-500">
+            Inga träffar
+          </div>
         )}
       </div>
     </div>

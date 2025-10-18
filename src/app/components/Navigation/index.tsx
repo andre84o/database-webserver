@@ -26,29 +26,36 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="bg-transparent p-4 hidden md:block">
-      <ul className="flex space-x-4">
-        {links.map(({ href, label }) => {
-          if (href === "/create" && !isLoggedIn) return null;
+    <nav className="hidden md:flex items-center p-2">
+      <div className="rounded-full bg-white/60 backdrop-blur-sm shadow-sm border border-neutral-100 px-4 py-2">
+        <ul className="flex items-center gap-6">
+          {links.map(({ href, label }) => {
+            if (href === "/create" && !isLoggedIn) return null;
 
-          const isActive =
-            href === "/" ? pathname === href : pathname.startsWith(href);
+            const isActive = href === "/" ? pathname === href : pathname.startsWith(href);
 
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={isActive ? "page" : undefined}
-                className={`${
-                  isActive ? "text-amber-400 font-semibold" : "text-[#735BFD]"
-                } hover:text-[#8B64FE]`}
-              >
-                {label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+            return (
+              <li key={href} className="relative">
+                <Link
+                  href={href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg transition-colors duration-200 ${
+                    isActive
+                      ? 'text-neutral-900 font-semibold bg-gradient-to-br from-[#fff8] via-[#fff4] to-[#fff2] shadow-sm'
+                      : 'text-[#4b3edb] hover:text-[#3427d9]'
+                  }`}
+                >
+                  <span className="leading-none">{label}</span>
+                </Link>
+
+                {isActive && (
+                  <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-[#8B64FE] to-[#5E4EFD] rounded-full shadow-[0_6px_18px_rgba(115,91,253,0.12)]" />
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </nav>
   );
 };

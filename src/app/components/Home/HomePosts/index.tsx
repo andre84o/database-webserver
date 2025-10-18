@@ -1,6 +1,7 @@
 "use client";
 import { getHomePosts } from "@/utils/supabase/queries";
 import Link from "next/link";
+import SearchInput from "@/app/components/Search";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/browser.client";
 import { useEffect, useState } from "react";
@@ -46,27 +47,39 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
 
   return (
     <>
-      <div className="mb-4 flex items-center gap-4">
-        <label className="flex items-center gap-2">
-          <span className="text-sm">Category</span>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="border rounded px-2 py-1"
-          >
-            <option value="">All</option>
-            <option>Food</option>
-            <option>Politics</option>
-            <option>Travel</option>
-            <option>Inspiration</option>
-            <option>News</option>
-            <option>Food &amp; Recipes</option>
-            <option>Photo &amp; Design</option>
-            <option>Productivity</option>
-          </select>
-        </label>
+      <div className="mb-6 flex flex-col md:flex-row items-center justify-center gap-4">
+        <div className="order-2 md:order-1 w-full md:w-auto md:mr-6">
+          <SearchInput />
+        </div>
+        <div className="order-1 md:order-2">
+          <label className="flex items-center gap-2">
+            <span className="text-sm">Category</span>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="border rounded px-2 py-1"
+            >
+              <option value="">All</option>
+              <option>Food</option>
+              <option>Politics</option>
+              <option>Travel</option>
+              <option>Inspiration</option>
+              <option>News</option>
+              <option>Food &amp; Recipes</option>
+              <option>Photo &amp; Design</option>
+              <option>Productivity</option>
+            </select>
+          </label>
+        </div>
       </div>
-  <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+      <div
+        className="
+    grid grid-cols-1
+    sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+    gap-6
+    auto-rows-[20rem]
+  "
+      >
         {data && data.length > 0 ? (
           <>
             {data[0] && (
@@ -119,9 +132,9 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
               <Link
                 key={id}
                 href={`/${slug}`}
-                className="block h-full rounded-2xl overflow-hidden"
+                className="block rounded-2xl overflow-hidden shadow-xl h-80"
               >
-                <article className="relative overflow-hidden rounded-2xl shadow-md bg-white hover:shadow-lg transition-shadow duration-200 h-full flex flex-col">
+                <article className="relative overflow-hidden rounded-2xl shadow-md bg-white hover:shadow-lg transition-shadow duration-200 h-80 flex flex-col">
                   {image_url ? (
                     <img
                       src={image_url}
@@ -142,7 +155,8 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                     </h3>
                     <p className="text-sm text-neutral-600 mb-3">
                       {excerptWords(
-                        (data as any).find((p: any) => p.id === id)?.content ?? "",
+                        (data as any).find((p: any) => p.id === id)?.content ??
+                          "",
                         9
                       )}
                     </p>
