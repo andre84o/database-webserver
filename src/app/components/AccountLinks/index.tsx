@@ -26,7 +26,7 @@ const AccountLinks = async () => {
           <div className="text-sm text-gray-400">
             Signed in as {username ?? user.email}
           </div>
-            <Link className="button-tertiary" href="/create">
+            <Link className="button-tertiary hover:bg-gray-100" href="/create">
             Create Post
           </Link>
 

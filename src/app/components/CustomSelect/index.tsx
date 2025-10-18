@@ -14,6 +14,7 @@ type Props = {
 
 export default function CustomSelect({ name, defaultValue, options, children, className = '' }: Props) {
   const [open, setOpen] = useState(false);
+  const [openUp, setOpenUp] = useState(false);
   const [value, setValue] = useState<string>(defaultValue ?? "");
   const [highlight, setHighlight] = useState<number>(0);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -31,7 +32,20 @@ export default function CustomSelect({ name, defaultValue, options, children, cl
   }, []);
 
   useEffect(() => {
-    // ensure highlight stays visible
+    if (!open) return;
+    if (!rootRef.current) return;
+    const dropdownEstimate = 9 * 16;
+    const rect = rootRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    if (spaceBelow < dropdownEstimate && spaceAbove > spaceBelow) {
+      setOpenUp(true);
+    } else {
+      setOpenUp(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
     if (!listRef.current) return;
     const el = listRef.current.children[highlight] as HTMLElement | undefined;
     if (el) el.scrollIntoView({ block: 'nearest' });
@@ -72,20 +86,24 @@ export default function CustomSelect({ name, defaultValue, options, children, cl
       </button>
 
       {open && (
-        <div ref={listRef} role="listbox" aria-label="select options" tabIndex={-1} className="absolute left-0 right-0 mt-2 bg-white border rounded-md z-50 max-h-[9rem] overflow-auto">
+        <div
+          ref={listRef}
+          role="listbox"
+          aria-label="select options"
+          tabIndex={-1}
+          className={`${openUp ? 'absolute left-0 right-0 bottom-full mb-2' : 'absolute left-0 right-0 mt-2'} bg-white border rounded-md z-50 max-h-[9rem] overflow-auto`}
+        >
           {opts.map((o, i) => (
             <div
               key={o.value + i}
               role="option"
               aria-selected={value === o.value}
               onMouseDown={(e) => {
-                // prevent blur on the button so click reliably registers
                 e.preventDefault();
               }}
               onClick={() => {
                 setValue(o.value);
                 setOpen(false);
-                // focus the trigger button so keyboard users keep context
                 const btn = rootRef.current?.querySelector('button') as HTMLButtonElement | null;
                 if (btn) btn.focus();
               }}

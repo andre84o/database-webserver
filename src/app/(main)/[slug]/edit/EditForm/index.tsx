@@ -99,7 +99,7 @@ const EditForm = ({
         />
       </label>
 
-      <label className="flex flex-col">
+      <div className="flex flex-col">
         <span className="font-medium">Image</span>
 
         {imagePreview && (
@@ -123,9 +123,11 @@ const EditForm = ({
 
         <input
           ref={fileRef}
+          id="image"
           type="file"
           name="image"
           accept="image/*"
+          className="hidden"
           onChange={(e) => {
             const file = e.currentTarget.files?.[0];
             if (file) {
@@ -143,8 +145,28 @@ const EditForm = ({
           }}
         />
 
+        <label htmlFor="image" className="bookmarkBtn">
+          <span className="IconContainer">
+            <svg
+              className="icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </span>
+          <p className="text">Save</p>
+        </label>
+
         {removeImage && <input type="hidden" name="removeImage" value="on" />}
-      </label>
+      </div>
 
       <label className="flex flex-col">
         <span className="font-medium">Category</span>
