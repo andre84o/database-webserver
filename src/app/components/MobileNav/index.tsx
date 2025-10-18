@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/browser.client";
-import { Menu, X, Home, Plus, Info } from "lucide-react";
+import { Menu, X, Home, Plus, Info, LogIn } from "lucide-react";
+import LogOutButton from "@/app/components/AccountLinks/LogOutButton";
 
 const MobileNav = () => {
   const [open, setOpen] = useState(false);
@@ -122,11 +123,28 @@ const MobileNav = () => {
               </ul>
             </nav>
 
-            <div className="mt-4 border-t pt-4 px-1">
+            <div className="mt-4 border-t pt-4 px-1 space-y-2">
               {isLoggedIn ? (
-                <Link href="/create" className="block w-full text-center bg-neutral-900 text-white py-3 rounded-md">Create Post</Link>
+                <div className="flex flex-col gap-2">
+                  <Link href="/create" className="flex items-center gap-3 p-3 rounded-md bg-neutral-900 text-white justify-center">
+                    <Plus size={16} />
+                    <span>Create Post</span>
+                  </Link>
+
+                  <div>
+                    <LogOutButton className="w-full">
+                      <div className="flex items-center gap-3 justify-center w-full p-3 rounded-md border border-neutral-200 hover:bg-slate-50">
+                        <LogIn size={16} className="transform rotate-180" />
+                        <span>Log out</span>
+                      </div>
+                    </LogOutButton>
+                  </div>
+                </div>
               ) : (
-                <Link href="/auth/login" className="block w-full text-center border border-neutral-200 py-3 rounded-md">Log in</Link>
+                <Link href="/auth/login" className="flex items-center gap-3 p-3 rounded-md border border-neutral-200 justify-center">
+                  <LogIn size={16} />
+                  <span>Log in</span>
+                </Link>
               )}
             </div>
           </div>

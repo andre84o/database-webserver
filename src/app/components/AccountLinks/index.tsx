@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server-client";
 import Link from "next/link";
 import LogOutButton from "./LogOutButton";
+import { LogOut, Plus } from "lucide-react";
 
 const AccountLinks = async () => {
   const supabase = await createClient();
@@ -26,11 +27,17 @@ const AccountLinks = async () => {
           <div className="text-sm text-gray-400">
             Signed in as {username ?? user.email}
           </div>
-            <Link className="button-tertiary hover:bg-gray-100" href="/create">
-            Create Post
-          </Link>
+            <Link href="/create" className="flex items-center gap-2 px-3 py-2 rounded-md border border-neutral-200 hover:bg-slate-50">
+              <Plus size={16} />
+              <span>Create Post</span>
+            </Link>
 
-          <LogOutButton />
+          <LogOutButton>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-neutral-200 hover:bg-slate-50">
+              <LogOut size={16} />
+              <span>Log Out</span>
+            </div>
+          </LogOutButton>
         </>
       ) : (
         <Link className="button-primary" href="auth/login">

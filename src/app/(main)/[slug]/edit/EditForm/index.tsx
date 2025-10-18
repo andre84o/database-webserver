@@ -22,6 +22,8 @@ const EditForm = ({
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialImageUrl ?? null
   );
+  const [dirty, setDirty] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const handleRemoveImage = async (e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -56,17 +58,35 @@ const EditForm = ({
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
+    const fileInput = fileRef.current;
+    const hasFile = !!(fileInput && fileInput.files && fileInput.files.length > 0);
+    if (!hasFile) {
+      fd.delete('image');
+    }
     try {
       const res = await fetch('/api/posts/edit', { method: 'POST', body: fd });
-      if (!res.ok) {
-        const txt = await res.text();
-        alert('Save failed: ' + txt);
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        alert('Save failed: ' + (json?.message ?? await res.text()));
         return;
       }
-      startTransition(() => {
-        router.replace('/');
-        router.refresh();
-      });
+
+      setToast('Saved');
+      setTimeout(() => {
+        setToast(null);
+        const slug = json?.result?.updated?.slug ?? json?.result?.slug;
+        if (slug) {
+          startTransition(() => {
+            router.push(`/${slug}`);
+          });
+        } else {
+          startTransition(() => {
+            router.replace('/');
+            router.refresh();
+          });
+        }
+      }, 5000);
+      setDirty(false);
     } catch (err) {
       console.error('Save error', err);
       alert('Save error');
@@ -87,6 +107,7 @@ const EditForm = ({
           name="title"
           defaultValue={initialTitle ?? ""}
           className="w-full border border-gray-300 rounded px-3 py-2"
+          onChange={() => setDirty(true)}
         />
       </label>
 
@@ -96,6 +117,7 @@ const EditForm = ({
           name="content"
           defaultValue={initialContent ?? ""}
           className="w-full border border-gray-300 rounded px-3 py-2 min-h-[160px]"
+          onChange={() => setDirty(true)}
         />
       </label>
 
@@ -141,6 +163,7 @@ const EditForm = ({
               }
               setImagePreview(URL.createObjectURL(file));
               setRemoveImage(false);
+              setDirty(true);
             }
           }}
         />
@@ -162,7 +185,7 @@ const EditForm = ({
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
             </svg>
           </span>
-          <p className="text">Save</p>
+          <p className="text">Image+</p>
         </label>
 
         {removeImage && <input type="hidden" name="removeImage" value="on" />}
@@ -184,11 +207,12 @@ const EditForm = ({
             { value: "Photo & Design", label: "Photo & Design" },
             { value: "Productivity", label: "Productivity" },
           ]}
+          onChange={() => setDirty(true)}
         />
       </label>
 
-      <div className="hidden sm:flex gap-2">
-        <button type="submit" className="button-primary">
+        <div className="hidden sm:flex gap-2">
+        <button type="submit" className="button-primary" disabled={!dirty}>
           Save
         </button>
       </div>
@@ -198,10 +222,16 @@ const EditForm = ({
           form="edit-post-form"
           type="submit"
           className="w-full bg-neutral-900 text-white py-3 rounded-lg shadow-lg"
+          disabled={!dirty}
         >
           Save
         </button>
       </div>
+      {toast && (
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-neutral-900 text-white px-4 py-2 rounded opacity-95">{toast}</div>
+        </div>
+      )}
     </form>
   );
 };

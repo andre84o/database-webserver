@@ -1,13 +1,40 @@
-import { CreatePost } from "@/actions/create.post";
-import CustomSelect from "@/app/components/CustomSelect";
+"use client";
 
-const CreatePage = async () => {
+import { useState } from "react";
+import CustomSelect from "@/app/components/CustomSelect";
+import { useRouter } from "next/navigation";
+
+const CreatePage = () => {
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const router = useRouter();
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSaving(true);
+    const fd = new FormData(e.currentTarget as HTMLFormElement);
+    try {
+      const res = await fetch('/api/posts/create', { method: 'POST', body: fd });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.message || 'Create failed');
+      setToast('Saved');
+      setTimeout(() => {
+        setToast(null);
+        if (json.result?.slug) router.push(`/${json.result.slug}`);
+      }, 5000);
+    } catch (err: any) {
+      alert('Create failed: ' + (err?.message ?? err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 sm:py-10 mt-4">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
         <h1 className="font-bold text-2xl mb-4">Create Post</h1>
 
-  <form id="create-post-form" action={CreatePost} className="space-y-6 pb-28 sm:pb-0">
+        <form id="create-post-form" onSubmit={onSubmit} className="space-y-6 pb-28 sm:pb-0">
           <div>
             <label className="block mb-2 font-medium text-sm" htmlFor="title">
               Title
@@ -48,7 +75,7 @@ const CreatePage = async () => {
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                 </svg>
               </span>
-              <span className="text">Save</span>
+              <span className="text">Image+</span>
             </label>
           </div>
           <div>
@@ -57,6 +84,7 @@ const CreatePage = async () => {
             </label>
             <CustomSelect
               name="category"
+              onChange={() => { /*could be used to enable submit */ }}
               options={[
                 { value: "", label: "Select a category" },
                 { value: "Food", label: "Food" },
@@ -71,8 +99,8 @@ const CreatePage = async () => {
             />
           </div>
           <div className="hidden sm:block">
-            <button className="w-40 inline-block bg-neutral-900 text-white py-3 px-4 rounded-lg" type="submit">
-              Create
+            <button className="w-40 inline-block bg-neutral-900 text-white py-3 px-4 rounded-lg" type="submit" disabled={saving}>
+              {saving ? 'Saving...' : 'Create'}
             </button>
           </div>
         </form>
@@ -83,10 +111,17 @@ const CreatePage = async () => {
           type="submit"
           className="w-full bg-neutral-900 text-white py-3 rounded-lg shadow-lg"
           aria-label="Create post"
+          disabled={saving}
         >
-          Create
+          {saving ? 'Saving...' : 'Create'}
         </button>
       </div>
+
+      {toast && (
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-neutral-900 text-white px-4 py-2 rounded opacity-95">{toast}</div>
+        </div>
+      )}
     </div>
   );
 };

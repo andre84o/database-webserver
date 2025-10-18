@@ -3,7 +3,12 @@
 import { useTransition } from "react";
 import { LogOut } from "@/actions/log-out";
 
-export default function LogOutButton() {
+type Props = {
+  className?: string;
+  children?: React.ReactNode;
+};
+
+export default function LogOutButton({ className = '', children }: Props) {
   const [pending, startTransition] = useTransition();
 
   return (
@@ -13,8 +18,8 @@ export default function LogOutButton() {
         await LogOut();
       }}
     >
-      <button type="submit" className="button-secondary cursor-pointer" disabled={pending}>
-        {pending ? "Logging out..." : "Log Out"}
+      <button type="submit" className={`${className} cursor-pointer`} disabled={pending}>
+        {pending ? "Logging out..." : children ?? "Log Out"}
       </button>
     </form>
   );

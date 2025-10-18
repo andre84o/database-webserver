@@ -10,9 +10,10 @@ type Props = {
   options?: Option[];
   children?: React.ReactNode;
   className?: string;
+  onChange?: (value: string) => void;
 };
 
-export default function CustomSelect({ name, defaultValue, options, children, className = '' }: Props) {
+export default function CustomSelect({ name, defaultValue, options, children, className = '', onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [openUp, setOpenUp] = useState(false);
   const [value, setValue] = useState<string>(defaultValue ?? "");
@@ -63,6 +64,7 @@ export default function CustomSelect({ name, defaultValue, options, children, cl
       const opt = opts[highlight];
       if (opt) {
         setValue(opt.value);
+        onChange?.(opt.value);
         setOpen(false);
       }
     }
@@ -103,6 +105,7 @@ export default function CustomSelect({ name, defaultValue, options, children, cl
               }}
               onClick={() => {
                 setValue(o.value);
+                onChange?.(o.value);
                 setOpen(false);
                 const btn = rootRef.current?.querySelector('button') as HTMLButtonElement | null;
                 if (btn) btn.focus();

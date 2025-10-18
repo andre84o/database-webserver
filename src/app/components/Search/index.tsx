@@ -1,5 +1,7 @@
-"use client"
-import { useState, useEffect, useRef, useLayoutEffect, SetStateAction } from "react";
+"use client";
+
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getSearchPosts } from "@/utils/supabase/queries";
@@ -15,15 +17,21 @@ function useDebouncedValue<T>(value: T, ms = 200) {
   return debounced;
 }
 
-const SearchInput = () => {
-  const [userInput, setUserInput] = useState<string>("");
+export default function SearchInput(): React.ReactElement {
+  const [userInput, setUserInput] = useState("");
   const debounced = useDebouncedValue(userInput, 250);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const portalRef = useRef<HTMLDivElement | null>(null);
-  const [portalStyle, setPortalStyle] = useState<{ left: number; top: number; width: number } | null>(null);
 
-  const { data } = useQuery({
+  const [portalReady, setPortalReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [open, setOpen] = useState(false);
+  const mobileRootRef = useRef<HTMLDivElement | null>(null);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
+  const { data, refetch } = useQuery({
     queryKey: ["search-results", debounced],
     queryFn: async () => {
       const term = String(debounced ?? "").trim();
@@ -34,9 +42,108 @@ const SearchInput = () => {
     enabled: Boolean(debounced && String(debounced).trim().length >= 2),
   });
 
-  const handleChange = (e: { target: { value: SetStateAction<string> } }) => {
-    setUserInput(e.target.value as string);
+  const results = data ?? [];
+
+  useEffect(() => {
+    const el = document.createElement("div");
+    el.setAttribute("data-search-portal", "1");
+    el.style.position = "fixed";
+    el.style.top = "-9999px";
+    el.style.left = "0";
+    el.style.width = "1px";
+    el.style.height = "1px";
+    el.style.visibility = "hidden";
+    document.body.appendChild(el);
+    portalRef.current = el;
+    setPortalReady(true);
+
+    return () => {
+      if (portalRef.current?.parentElement) {
+        portalRef.current.parentElement.removeChild(portalRef.current);
+      }
+      portalRef.current = null;
+      setPortalReady(false);
+    };
+  }, []);
+  useEffect(() => {
+    const el = document.createElement("div");
+    el.setAttribute("data-mobile-search-portal", "1");
+    document.body.appendChild(el);
+    mobileRootRef.current = el;
+    return () => {
+      if (mobileRootRef.current?.parentElement)
+        mobileRootRef.current.parentElement.removeChild(mobileRootRef.current);
+      mobileRootRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    try {
+      mq.addEventListener?.("change", update);
+    } catch {
+      (mq as any).addListener?.(update);
+    }
+    return () => {
+      try {
+        mq.removeEventListener?.("change", update);
+      } catch {
+        (mq as any).removeListener?.(update);
+      }
+    };
+  }, []);
+
+  const applyPortalPosition = () => {
+    if (!portalRef.current) return;
+    const mobileButton = document.querySelector<HTMLElement>(
+      '[data-testid="mobile-search-button"]'
+    );
+    const anchor =
+      open && isMobile
+        ? mobileButton ?? containerRef.current
+        : inputRef.current ??
+          (containerRef.current?.querySelector("input") as HTMLElement | null);
+
+    if (!anchor) return;
+
+    const rect = (anchor as HTMLElement).getBoundingClientRect();
+    const el = portalRef.current;
+
+    el.style.position = "fixed";
+    el.style.zIndex = "99999";
+    const top = rect.bottom + 8;
+    el.style.top = `${top}px`;
+    if (isMobile) {
+      const margin = 12;
+      el.style.left = `${margin}px`;
+      el.style.right = `${margin}px`;
+      el.style.width = `calc(100vw - ${margin * 2}px)`;
+    } else {
+      const left = Math.max(8, rect.left);
+      const width = Math.min(rect.width, window.innerWidth - 32);
+      el.style.left = `${left}px`;
+      el.style.right = "";
+      el.style.width = `${width}px`;
+    }
+    el.style.visibility = "visible";
   };
+  useLayoutEffect(() => {
+    if (open && portalReady) applyPortalPosition();
+  }, [open, isMobile, portalReady, debounced, results.length]);
+
+  useEffect(() => {
+    const rerun = () => applyPortalPosition();
+    if (open) {
+      window.addEventListener("resize", rerun);
+      window.addEventListener("scroll", rerun, { passive: true });
+    }
+    return () => {
+      window.removeEventListener("resize", rerun);
+      window.removeEventListener("scroll", rerun);
+    };
+  }, [open, isMobile]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -44,55 +151,20 @@ const SearchInput = () => {
       if (containerRef.current && containerRef.current.contains(target)) return;
       if (portalRef.current && portalRef.current.contains(target)) return;
       setUserInput("");
+      setOpen(false);
     }
     document.addEventListener("click", onDocClick);
     return () => document.removeEventListener("click", onDocClick);
   }, []);
-  const results = data ?? [];
-
-  useEffect(() => {
-    const el = document.createElement('div');
-    el.setAttribute('data-search-portal', '1');
-    document.body.appendChild(el);
-    portalRef.current = el;
-    return () => {
-      if (portalRef.current && portalRef.current.parentElement) {
-        portalRef.current.parentElement.removeChild(portalRef.current);
-      }
-      portalRef.current = null;
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    if (!containerRef.current) {
-      setPortalStyle(null);
-      return;
-    }
-    const inputEl = inputRef.current ?? containerRef.current?.querySelector('input');
-    if (!inputEl) {
-      setPortalStyle(null);
-      return;
-    }
-    const rect = (inputEl as HTMLElement).getBoundingClientRect();
-    const left = Math.max(8, rect.left + window.scrollX);
-    const top = rect.bottom + window.scrollY + 8;
-    const width = Math.min(rect.width, window.innerWidth - 32);
-    setPortalStyle({ left, top, width });
-
-    if (portalRef.current) {
-      portalRef.current.style.position = 'absolute';
-      portalRef.current.style.left = `${left}px`;
-      portalRef.current.style.top = `${top}px`;
-      portalRef.current.style.width = `${width}px`;
-      portalRef.current.style.zIndex = '99999';
-    }
-  }, [debounced, results.length]);
 
   const excerpt = (s: string | null | undefined, n = 18) => {
     if (!s) return "";
     const words = String(s).split(/\s+/).filter(Boolean);
-    return words.length <= n ? words.join(" ") : words.slice(0, n).join(" ") + "...";
+    return words.length <= n
+      ? words.join(" ")
+      : words.slice(0, n).join(" ") + "...";
   };
+
   const dropdown = (
     <div className="mt-2 w-full">
       {debounced && debounced.trim().length < 2 ? (
@@ -108,11 +180,20 @@ const SearchInput = () => {
               href={`/${r.slug}`}
               key={r.slug}
               className="block p-3 hover:bg-slate-50 border-b last:border-b-0"
-              onClick={() => setUserInput("")}
+              onClick={() => {
+                setUserInput("");
+                setOpen(false);
+              }}
             >
-              <div className="font-medium text-sm text-neutral-900">{r.title}</div>
-              <div className="text-xs text-neutral-600">{excerpt(r.content, 18)}</div>
-              <div className="text-xs text-neutral-500 mt-1">{r.users?.username ?? "Unknown"}</div>
+              <div className="font-medium text-sm text-neutral-900">
+                {r.title}
+              </div>
+              <div className="text-xs text-neutral-600">
+                {excerpt(r.content, 18)}
+              </div>
+              <div className="text-xs text-neutral-500 mt-1">
+                {r.users?.username ?? "Unknown"}
+              </div>
             </Link>
           ))}
         </div>
@@ -125,33 +206,99 @@ const SearchInput = () => {
       )}
     </div>
   );
-  return (
-    <div className="relative" ref={containerRef}>
-      <div className="flex items-center gap-2">
-        <Search size={18} />
+
+  const popupContent = (
+    <div className="z-[99999]">
+      <div className="bg-white border rounded-xl shadow-lg p-3 search-popup-shadow">
+        <div className="flex items-center gap-2">
+          <input
+            ref={inputRef}
+            autoFocus
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setOpen(false);
+            }}
+            className="border-0 outline-none p-2 rounded-l-xl flex-1 text-sm"
+            name="search"
+            placeholder="Sök i inlägg"
+          />
+          <button
+            aria-label="Sök"
+            onClick={async () => {
+              try {
+                await (refetch ? refetch() : Promise.resolve());
+              } catch {}
+            }}
+            className="ml-2 inline-flex items-center justify-center px-3 py-2 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition"
+          >
+            <Search size={16} />
+          </button>
+        </div>
+        {dropdown}
+      </div>
+    </div>
+  );
+  const mobileInline = (
+    <div className="block md:hidden w-[90%] mx-auto mt-8">
+      <div className="flex items-center gap-2 bg-white border rounded-xl px-3 py-2 shadow-sm">
+        <Search size={18} className="text-neutral-500" />
         <input
           ref={inputRef}
           value={userInput}
-          onChange={handleChange}
-          className="border rounded-xl p-2 w-full sm:w-64"
+          onChange={(e) => setUserInput(e.target.value)}
+          className="border-0 outline-none p-0 w-full text-sm"
           name="search"
-          placeholder="Search posts"
+          placeholder="Sök i inlägg"
         />
+        <button
+          aria-label="Sök"
+          onClick={async () => {
+            try {
+              await (refetch ? refetch() : Promise.resolve());
+            } catch {}
+          }}
+          className="ml-2 inline-flex items-center justify-center px-3 py-2 rounded-md bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition"
+        >
+          <Search size={16} />
+        </button>
       </div>
-      {portalRef.current && portalStyle ? (
-        createPortal(
-          <div className="z-[99999]" aria-live="polite">
-            {dropdown}
-          </div>,
-          portalRef.current
-        )
-      ) : (
+      <div className="mt-2">{dropdown}</div>
+    </div>
+  );
+
+  return (
+    <div className="relative" ref={containerRef}>
+      {!isMobile && (
+        <div className="flex items-center gap-2 bg-white border rounded-xl px-3 py-2 shadow-sm">
+          <Search size={18} className="text-neutral-500" />
+          <input
+            ref={inputRef}
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            className="border-0 outline-none p-0 w-full text-sm"
+            name="search"
+            placeholder="Search posts"
+          />
+          <button
+            aria-label="Sök"
+            onClick={async () => {
+              try {
+                await (refetch ? refetch() : Promise.resolve());
+              } catch {}
+            }}
+            className="ml-2 inline-flex items-center justify-center px-3 py-2 rounded-md bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition"
+          >
+            <Search size={16} />
+          </button>
+        </div>
+      )}
+      {!isMobile && (
         <div className="absolute left-0 z-50 mt-2 w-full max-w-[90vw] sm:max-w-md">
           {dropdown}
         </div>
       )}
+      {isMobile && isHome && mobileRootRef.current ? createPortal(mobileInline, mobileRootRef.current) : null}
     </div>
   );
-};
-
-export default SearchInput;
+}

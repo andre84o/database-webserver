@@ -64,8 +64,9 @@ export async function updatePost(formData: FormData) {
     }
 
     let imageUrlToSet: string | null | undefined = undefined
-    const image = formData.get('image') as File | null
-    const removeImage = formData.get('removeImage')
+    const image = formData.get('image') as any
+    const rawRemoveImage = formData.get('removeImage')
+    const removeImage = rawRemoveImage === 'on' || rawRemoveImage === 'true'
 
     const extractPathFromPublicUrl = (url?: string | null) => {
       if (!url) return null;
@@ -78,8 +79,8 @@ export async function updatePost(formData: FormData) {
         return idx >= 0 ? String(url).slice(idx + '/images/'.length) : null;
       }
     }
-
-    if (image && image instanceof File) {
+    const isFileLike = image && (image instanceof File || typeof image?.arrayBuffer === 'function');
+    if (isFileLike) {
       try {
         imageUrlToSet = await uploadImages(image, userId ?? undefined)
         console.log('upload-images upload result, imageUrlToSet:', imageUrlToSet)
