@@ -10,8 +10,8 @@ const Logo = () => {
           alt="Logo"
           width={100}
           height={100}
-          className="w-32 h-auto md:w-[100px]"
-          sizes="(max-width: 768px) 158px, 100px"
+          className="w-[120px] h-auto md:w-32"
+          sizes="(max-width: 768px) 100px, 128px"
           priority
         />
       </Link>

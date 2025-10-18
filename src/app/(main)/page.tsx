@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getHomePosts } from "@/utils/supabase/queries";
 import { createClient } from "@/utils/supabase/server-client";
 import ExplorePostsLink from "@/app/components/Home/HomePosts/ExplorePostsLink";
+import { MobileSearchInline } from "@/app/components/Search";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -11,6 +12,7 @@ export default async function Home() {
 
   return (
     <div className="w-[90%] mx-auto mt-8">
+      <MobileSearchInline />
       <section className="relative h-[60vh] md:h-[70vh] rounded-3xl overflow-hidden mb-12 bg-gradient-to-r from-gray-900 via-neutral-900 to-gray-800 text-white shadow-2xl">
         <div className="h-full flex items-center">
           <div className="p-8 md:p-16 lg:p-24 max-w-3xl">
