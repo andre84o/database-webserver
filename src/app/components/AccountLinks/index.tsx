@@ -7,7 +7,6 @@ const AccountLinks = async () => {
   const supabase = await createClient();
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser();
 
   let username: string | null = null;
@@ -24,13 +23,24 @@ const AccountLinks = async () => {
     <div className="flex items-center gap-3">
       {user ? (
         <>
-          <div className="text-sm text-gray-400">
-            Signed in as {username ?? user.email}
+          <div
+            className="
+              absolute bottom-1 left-2
+              md:left-auto md:right-2
+              md:bottom-1
+              z-10 text-xs sm:text-sm text-gray-400 whitespace-nowrap mr-5
+            "
+          >
+            ID: {username ?? user.email}
           </div>
-            <Link href="/create" className="flex items-center gap-2 px-3 py-2 rounded-md border border-neutral-200 hover:bg-slate-50">
-              <Plus size={16} />
-              <span>Create Post</span>
-            </Link>
+
+          <Link
+            href="/create"
+            className="flex items-center gap-2 px-3 py-2 rounded-md border border-neutral-200 hover:bg-slate-50"
+          >
+            <Plus size={16} />
+            <span>Create Post</span>
+          </Link>
 
           <LogOutButton>
             <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-neutral-200 hover:bg-slate-50">

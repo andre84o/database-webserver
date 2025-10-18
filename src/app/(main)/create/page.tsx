@@ -3,10 +3,11 @@
 import { useState } from "react";
 import CustomSelect from "@/app/components/CustomSelect";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/app/components/providers/toast-provider";
 
 const CreatePage = () => {
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const toast = useToast();
   const router = useRouter();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -17,13 +18,10 @@ const CreatePage = () => {
       const res = await fetch('/api/posts/create', { method: 'POST', body: fd });
       const json = await res.json();
       if (!json.ok) throw new Error(json.message || 'Create failed');
-      setToast('Saved');
-      setTimeout(() => {
-        setToast(null);
-        if (json.result?.slug) router.push(`/${json.result.slug}`);
-      }, 5000);
+      toast.push({ type: 'success', message: 'Saved' });
+      if (json.result?.slug) router.push(`/${json.result.slug}`);
     } catch (err: any) {
-      alert('Create failed: ' + (err?.message ?? err));
+      toast.push({ type: 'error', message: 'Create failed: ' + (err?.message ?? err) });
     } finally {
       setSaving(false);
     }
@@ -117,11 +115,6 @@ const CreatePage = () => {
         </button>
       </div>
 
-      {toast && (
-        <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
-          <div className="bg-neutral-900 text-white px-4 py-2 rounded opacity-95">{toast}</div>
-        </div>
-      )}
     </div>
   );
 };

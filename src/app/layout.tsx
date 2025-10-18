@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "./components/Header";
 import { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "./components/providers/query-client-provider";
+import { ToastProvider } from "./components/providers/toast-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,9 @@ export default function RootLayout({
         className={`p-8 ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryClientProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </QueryClientProvider>
       </body>
     </html>

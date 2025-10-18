@@ -8,6 +8,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, result });
   } catch (err: any) {
     console.error("/api/posts/edit error:", err);
-    return new NextResponse(err?.message ?? "Error", { status: 500 });
+    return NextResponse.json({ ok: false, message: String(err?.message ?? "Error") }, { status: 500 });
   }
 }

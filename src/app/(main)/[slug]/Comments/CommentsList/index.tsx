@@ -2,6 +2,8 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/utils/supabase/browser.client";
+import { apiFetch } from "@/utils/api";
+import { useToast } from "@/app/components/providers/toast-provider";
 
 type Comment = {
   id: number;
@@ -36,6 +38,7 @@ export default function CommentsList({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const editInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const toast = useToast();
 
   const relativeTime = (iso: string) => {
     const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
@@ -130,9 +133,7 @@ export default function CommentsList({
 
   const revalidateComments = async () => {
     try {
-      const res = await fetch(`/api/comments?post_id=${postId}&limit=${limit}&offset=${offset}`);
-      if (!res.ok) return;
-      const json = await res.json();
+      const json = await apiFetch(`/api/comments?post_id=${postId}&limit=${limit}&offset=${offset}`);
       setComments((prev) => {
         const map = new Map<number, Comment>();
         prev.forEach((p) => map.set(p.id, p));
@@ -142,6 +143,7 @@ export default function CommentsList({
         );
       });
     } catch (e) {
+      console.error('revalidateComments error', e);
     }
   };
 
@@ -185,11 +187,10 @@ export default function CommentsList({
   const handleDelete = async (commentId: number) => {
     const prev = comments;
     setComments((c) => c.filter((x) => x.id !== commentId));
-    const res = await fetch(`/api/comments?comment_id=${commentId}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) {
-      alert("Could not delete comment");
+    try {
+      await apiFetch(`/api/comments?comment_id=${commentId}`, { method: 'DELETE' });
+    } catch (err: any) {
+      toast.push({ type: 'error', message: 'Could not delete comment: ' + (err?.body?.message ?? err?.message) });
       setComments(prev);
     }
     revalidateComments();
@@ -200,13 +201,12 @@ export default function CommentsList({
     setComments((c) =>
       c.map((cm) => (cm.id === id ? { ...cm, content: newContent } : cm))
     );
-    const res = await fetch(`/api/comments`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ comment_id: id, content: newContent }),
-    });
-    if (res.ok) {
-      const json = await res.json();
+    try {
+      const json = await apiFetch(`/api/comments`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment_id: id, content: newContent }),
+      });
       const updated = json.data?.[0];
       setComments((c) =>
         c.map((cm) =>
@@ -220,8 +220,8 @@ export default function CommentsList({
         )
       );
       revalidateComments();
-    } else {
-      alert("Could not edit comment");
+    } catch (err: any) {
+      toast.push({ type: 'error', message: 'Could not edit comment: ' + (err?.body?.message ?? err?.message) });
       setComments(prev);
     }
   };
@@ -251,9 +251,16 @@ export default function CommentsList({
         content,
       }),
     });
-
-    if (res.ok) {
-      const json = await res.json();
+    try {
+      const json = await apiFetch(`/api/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          post_id: postId,
+          parent_id: parentRootId,
+          content,
+        }),
+      });
       const inserted: Comment | undefined = json.data?.[0];
       if (inserted)
         setComments((c) => [inserted, ...c.filter((x) => x.id !== tempId)]);
@@ -261,9 +268,9 @@ export default function CommentsList({
       setReplyToRootId(null);
       setReplyHintName("");
       revalidateComments();
-    } else {
+    } catch (err: any) {
       setComments((c) => c.filter((x) => x.id !== tempId));
-      alert("Could not post reply");
+      toast.push({ type: 'error', message: 'Could not post reply: ' + (err?.body?.message ?? err?.message) });
     }
   };
 

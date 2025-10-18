@@ -3,6 +3,7 @@
 import { useRef, useState, startTransition } from "react";
 import CustomSelect from "@/app/components/CustomSelect";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/app/components/providers/toast-provider";
 
 type Props = {
   postId: number;
@@ -23,7 +24,7 @@ const EditForm = ({
     initialImageUrl ?? null
   );
   const [dirty, setDirty] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const toast = useToast();
   const [removeImage, setRemoveImage] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const handleRemoveImage = async (e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,11 +45,11 @@ const EditForm = ({
       if (!res.ok) {
         const txt = await res.text();
         console.error('Failed to delete image via API', txt);
-        alert('Could not delete image on server: ' + txt);
+        toast.push({ type: 'error', message: 'Could not delete image on server: ' + txt });
       }
     } catch (err) {
       console.error('Error calling delete-image API', err);
-      alert('Error deleting image');
+      toast.push({ type: 'error', message: 'Error deleting image' });
     }
   };
 
@@ -67,29 +68,26 @@ const EditForm = ({
       const res = await fetch('/api/posts/edit', { method: 'POST', body: fd });
       const json = await res.json();
       if (!res.ok || !json.ok) {
-        alert('Save failed: ' + (json?.message ?? await res.text()));
+        toast.push({ type: 'error', message: 'Save failed: ' + (json?.message ?? await res.text()) });
         return;
       }
 
-      setToast('Saved');
-      setTimeout(() => {
-        setToast(null);
-        const slug = json?.result?.updated?.slug ?? json?.result?.slug;
-        if (slug) {
-          startTransition(() => {
-            router.push(`/${slug}`);
-          });
-        } else {
-          startTransition(() => {
-            router.replace('/');
-            router.refresh();
-          });
-        }
-      }, 5000);
+      toast.push({ type: 'success', message: 'Saved' });
+      const slug = json?.result?.updated?.slug ?? json?.result?.slug;
+      if (slug) {
+        startTransition(() => {
+          router.push(`/${slug}`);
+        });
+      } else {
+        startTransition(() => {
+          router.replace('/');
+          router.refresh();
+        });
+      }
       setDirty(false);
     } catch (err) {
       console.error('Save error', err);
-      alert('Save error');
+      toast.push({ type: 'error', message: 'Save error' });
     }
   };
 
@@ -155,9 +153,7 @@ const EditForm = ({
             if (file) {
               const maxBytes = 5 * 1024 * 1024;
               if (file.size > maxBytes) {
-                alert(
-                  "File is too large (max 5 MB). Please choose a smaller file."
-                );
+                toast.push({ type: 'error', message: 'File is too large (max 5 MB). Please choose a smaller file.' });
                 e.currentTarget.value = "";
                 return;
               }
@@ -227,11 +223,6 @@ const EditForm = ({
           Save
         </button>
       </div>
-      {toast && (
-        <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
-          <div className="bg-neutral-900 text-white px-4 py-2 rounded opacity-95">{toast}</div>
-        </div>
-      )}
     </form>
   );
 };

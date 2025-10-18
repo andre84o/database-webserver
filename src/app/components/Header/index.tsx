@@ -8,19 +8,52 @@ import Navigation from "../Navigation";
 
 export default async function Header() {
   let signedIn = false;
+  let userEmail: string | null = null;
+  let username: string | null = null;
+
   try {
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
     signedIn = !!data.user;
+    userEmail = data.user?.email ?? null;
+
+    if (data.user?.id) {
+      const { data: u } = await supabase
+        .from("users")
+        .select("username")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      username = (u as any)?.username ?? null;
+    }
   } catch {
     signedIn = false;
   }
 
   return (
     <header className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] bg-neutral-50/60 backdrop-blur-sm border-b border-neutral-200">
+      {signedIn && (
+        <div
+          className="
+      pointer-events-none select-none
+      absolute bottom-1 left-2 md:hidden  /* Svenska: bara mobil */
+      z-10 text-xs sm:text-sm text-gray-400 whitespace-nowrap
+    "
+        >
+          ID: {username ?? userEmail}
+        </div>
+      )}
+
       <div className="relative flex items-center">
         <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 md:pl-6">
-          <Logo />
+          <div className="block md:hidden">
+            <Logo />
+          </div>
+
+          <div className="hidden md:block">
+            <div className="bg-gray-200/10 rounded-full shadow-lg -translate-y-5">
+              <Logo />
+            </div>
+          </div>
         </div>
 
         <div className="flex-1">

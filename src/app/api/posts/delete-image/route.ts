@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const postId = Number(body.postId);
-    if (!Number.isFinite(postId)) return new NextResponse('Invalid postId', { status: 400 });
+  if (!Number.isFinite(postId)) return NextResponse.json({ ok: false, message: 'Invalid postId' }, { status: 400 });
 
     const supabase = await createClient();
     const { data: post } = await supabase.from('posts').select('image_url').eq('id', postId).maybeSingle();
@@ -31,18 +31,18 @@ export async function POST(req: Request) {
     const { data: delData, error: delErr } = await svc.storage.from('images').remove([path]);
     if (delErr) {
       console.error('delete-image storage error', delErr);
-      return new NextResponse(String(delErr?.message ?? delErr), { status: 500 });
+      return NextResponse.json({ ok: false, message: String(delErr?.message ?? delErr) }, { status: 500 });
     }
 
     const { data: updData, error: updErr } = await svc.from('posts').update({ image_url: null }).eq('id', postId).select('id').maybeSingle();
     if (updErr) {
       console.error('delete-image db update error', updErr);
-      return new NextResponse(String(updErr?.message ?? updErr), { status: 500 });
+      return NextResponse.json({ ok: false, message: String(updErr?.message ?? updErr) }, { status: 500 });
     }
 
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     console.error('/api/posts/delete-image', err);
-    return new NextResponse(String(err?.message ?? err), { status: 500 });
+    return NextResponse.json({ ok: false, message: String(err?.message ?? err) }, { status: 500 });
   }
 }
