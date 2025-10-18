@@ -1,4 +1,5 @@
 import { CreatePost } from "@/actions/create.post";
+import CustomSelect from "@/app/components/CustomSelect";
 
 const CreatePage = async () => {
   return (
@@ -54,21 +55,20 @@ const CreatePage = async () => {
             <label className="block mb-2 font-medium text-sm" htmlFor="category">
               Category
             </label>
-            <select
-              id="category"
+            <CustomSelect
               name="category"
-              className="w-full border border-gray-200 rounded-lg px-3 py-3 text-base"
-            >
-              <option value="">Select a category</option>
-              <option>Food</option>
-              <option>Politics</option>
-              <option>Travel</option>
-              <option>Inspiration</option>
-              <option>News</option>
-              <option>Food &amp; Recipes</option>
-              <option>Photo &amp; Design</option>
-              <option>Productivity</option>
-            </select>
+              options={[
+                { value: "", label: "Select a category" },
+                { value: "Food", label: "Food" },
+                { value: "Politics", label: "Politics" },
+                { value: "Travel", label: "Travel" },
+                { value: "Inspiration", label: "Inspiration" },
+                { value: "News", label: "News" },
+                { value: "Food & Recipes", label: "Food & Recipes" },
+                { value: "Photo & Design", label: "Photo & Design" },
+                { value: "Productivity", label: "Productivity" },
+              ]}
+            />
           </div>
           <div className="hidden sm:block">
             <button className="w-40 inline-block bg-neutral-900 text-white py-3 px-4 rounded-lg" type="submit">

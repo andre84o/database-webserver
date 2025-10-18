@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, startTransition } from "react";
+import CustomSelect from "@/app/components/CustomSelect";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -73,7 +74,11 @@ const EditForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form
+      id="edit-post-form"
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4"
+    >
       <input type="hidden" name="postId" value={String(postId)} />
 
       <label className="flex flex-col">
@@ -81,7 +86,7 @@ const EditForm = ({
         <input
           name="title"
           defaultValue={initialTitle ?? ""}
-          className="input"
+          className="w-full border border-gray-300 rounded px-3 py-2"
         />
       </label>
 
@@ -90,7 +95,7 @@ const EditForm = ({
         <textarea
           name="content"
           defaultValue={initialContent ?? ""}
-          className="textarea"
+          className="w-full border border-gray-300 rounded px-3 py-2 min-h-[160px]"
         />
       </label>
 
@@ -98,11 +103,11 @@ const EditForm = ({
         <span className="font-medium">Image</span>
 
         {imagePreview && (
-          <div className="relative mb-2 inline-block">
+          <div className="relative mb-2">
             <img
               src={imagePreview}
               alt="preview"
-              className="max-h-48 rounded"
+              className="w-full max-h-56 object-cover rounded"
             />
             <button
               type="button"
@@ -133,7 +138,7 @@ const EditForm = ({
                 return;
               }
               setImagePreview(URL.createObjectURL(file));
-              setRemoveImage(false); 
+              setRemoveImage(false);
             }
           }}
         />
@@ -143,21 +148,35 @@ const EditForm = ({
 
       <label className="flex flex-col">
         <span className="font-medium">Category</span>
-        <select name="category" defaultValue={initialCategory ?? ""} className="w-full border border-gray-300 rounded px-3 py-2">
-          <option value="">Select a category</option>
-          <option>Food</option>
-          <option>Politics</option>
-          <option>Travel</option>
-          <option>Inspiration</option>
-          <option>News</option>
-          <option>Food &amp; Recipes</option>
-          <option>Photo &amp; Design</option>
-          <option>Productivity</option>
-        </select>
+        <CustomSelect
+          name="category"
+          defaultValue={initialCategory ?? ""}
+          options={[
+            { value: "", label: "Select a category" },
+            { value: "Food", label: "Food" },
+            { value: "Politics", label: "Politics" },
+            { value: "Travel", label: "Travel" },
+            { value: "Inspiration", label: "Inspiration" },
+            { value: "News", label: "News" },
+            { value: "Food & Recipes", label: "Food & Recipes" },
+            { value: "Photo & Design", label: "Photo & Design" },
+            { value: "Productivity", label: "Productivity" },
+          ]}
+        />
       </label>
 
-      <div className="flex gap-2">
+      <div className="hidden sm:flex gap-2">
         <button type="submit" className="button-primary">
+          Save
+        </button>
+      </div>
+
+      <div className="sm:hidden fixed left-4 right-4 bottom-4 z-50">
+        <button
+          form="edit-post-form"
+          type="submit"
+          className="w-full bg-neutral-900 text-white py-3 rounded-lg shadow-lg"
+        >
           Save
         </button>
       </div>

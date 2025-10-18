@@ -15,15 +15,16 @@ const EditPage = async (props: any) => {
 
   if (!data) {
     return (
-      <div className="w-2xl p-4 m-auto border-gray-700 border-1 mt-4 rounded-2xl">
-        Post not found
+      <div className="max-w-2xl mx-auto px-4 py-6 mt-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">Post not found</div>
       </div>
     );
   }
 
   return (
-    <div className="w-2xl p-4 m-auto border-gray-700 border-1 mt-4 rounded-2xl">
-      <h1 className="font-bold text-xl mb-4">Edit Post</h1>
+    <div className="max-w-2xl mx-auto px-4 py-6 mt-4 mb-10">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+        <h1 className="font-bold text-xl mb-4">Edit Post</h1>
         <EditForm
           postId={data.id}
           initialTitle={data.title}
@@ -31,6 +32,7 @@ const EditPage = async (props: any) => {
           initialImageUrl={data.image_url}
           initialCategory={data.category ?? null}
         />
+      </div>
     </div>
   );
 };
