@@ -1,7 +1,7 @@
 "use client";
 
-import { createClient } from '@/utils/supabase/browser.client';
-import { useRouter } from 'next/navigation';
+import { createClient } from "@/utils/supabase/browser.client";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { logInSchema } from "@/actions/schemas";
@@ -10,9 +10,13 @@ import { useMutation } from "@tanstack/react-query";
 import { de } from "zod/locales";
 
 const LoginForm = () => {
-  const {register, handleSubmit, formState: {errors}} = useForm({
-    resolver: zodResolver(logInSchema)
-  })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(logInSchema),
+  });
 
   const router = useRouter();
 
@@ -24,19 +28,31 @@ const LoginForm = () => {
       return data;
     },
     onSuccess: () => {
-      router.replace('/');
-    }
-  })
+      router.replace("/");
+    },
+  });
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="min-h-[60vh] flex items-center justify-center -mx-8 sm:mx-0">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
-        <h2 className="text-3xl font-extrabold mb-2 text-neutral-900">Welcome back</h2>
-        <p className="text-sm text-neutral-600 mb-6">Log in to continue to your dashboard</p>
+        <h2 className="text-3xl font-extrabold mb-2 text-neutral-900">
+          Welcome back
+        </h2>
+        <p className="text-sm text-neutral-600 mb-6">
+          Log in to continue to your dashboard
+        </p>
 
-        <form onSubmit={handleSubmit((values) => mutate(values))} className="space-y-4">
+        <form
+          onSubmit={handleSubmit((values) => mutate(values))}
+          className="space-y-4"
+        >
           <div>
-            <label htmlFor="email" className="text-sm text-neutral-600 block mb-2">Email</label>
+            <label
+              htmlFor="email"
+              className="text-sm text-neutral-600 block mb-2"
+            >
+              Email
+            </label>
             <input
               {...register("email")}
               id="email"
@@ -48,7 +64,12 @@ const LoginForm = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="text-sm text-neutral-600 block mb-2">Password</label>
+            <label
+              htmlFor="password"
+              className="text-sm text-neutral-600 block mb-2"
+            >
+              Password
+            </label>
             <input
               {...register("password")}
               id="password"
@@ -57,11 +78,17 @@ const LoginForm = () => {
               placeholder="Your password"
               className="w-full rounded-md border border-neutral-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#735BFD]"
             />
-            {errors.password && <ErrorMessage message={errors.password.message as string} />}
+            {errors.password && (
+              <ErrorMessage message={errors.password.message as string} />
+            )}
           </div>
 
           <div className="pt-2">
-            <button type="submit" disabled={isPending} className="w-full button-primary">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="w-full button-primary"
+            >
               {isPending ? "Logging you in..." : "Sign in"}
             </button>
           </div>
@@ -75,6 +102,6 @@ const LoginForm = () => {
       </div>
     </div>
   );
-}
+};
 
 export default LoginForm;
