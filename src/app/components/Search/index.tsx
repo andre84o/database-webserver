@@ -252,7 +252,7 @@ export default function SearchInput(): React.ReactElement {
           onChange={(e) => setUserInput(e.target.value)}
           className="border-0 outline-none p-0 w-full text-sm"
           name="search"
-          placeholder="Sök i inlägg"
+          placeholder="Search posts"
         />
         <button
           aria-label="Sök"
