@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/browser.client";
-import { Menu, X, Home, Plus, Info, LogIn } from "lucide-react";
+import { Menu, X, Home, Plus, Info } from "lucide-react";
 
 const MobileNav = () => {
   const [open, setOpen] = useState(false);
@@ -65,71 +66,80 @@ const MobileNav = () => {
     { href: "/about", label: "About", Icon: Info },
   ];
 
-  return (
-    <div className="md:hidden">
-      <button
-        aria-label={open ? "Close menu" : "Open menu"}
-        aria-expanded={open ? "true" : "false"}
-        onClick={() => setOpen((v) => !v)}
-        className="p-2 rounded-md bg-white border border-neutral-200 text-neutral-700 hover:bg-slate-50"
-      >
-        {open ? <X size={18} /> : <Menu size={18} />}
-      </button>
+  const [portalEl, setPortalEl] = useState<HTMLElement | null>(null);
 
+  useEffect(() => {
+    const el = document.createElement("div");
+    el.setAttribute("id", "mobile-nav-portal");
+    document.body.appendChild(el);
+    setPortalEl(el);
+    return () => {
+      document.body.removeChild(el);
+    };
+  }, []);
+
+  const toggleButton = (
+    <button
+      aria-label={open ? "Close menu" : "Open menu"}
+      aria-expanded={open ? "true" : "false"}
+      onClick={() => setOpen((v) => !v)}
+      className="md:hidden p-2 rounded-md bg-white border border-neutral-200 text-neutral-700 hover:bg-slate-50"
+    >
+      {open ? <X size={18} /> : <Menu size={18} />}
+    </button>
+  );
+
+  const panel = (
+    <>
       <div
         aria-hidden={!open}
-        className={`fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} z-[99999]`}
         onClick={() => setOpen(false)}
       />
+      <aside ref={panelRef} role="dialog" aria-modal="true" className={`fixed inset-0 z-[99999] pointer-events-none`}>
+        <div className={`absolute inset-0 transform transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "translate-x-full"}`}>
+          <div className="absolute right-0 top-16 h-[calc(100vh-4rem)] w-[min(85vw,320px)] bg-white shadow-lg flex flex-col p-4 overflow-y-auto pointer-events-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-lg font-bold">Menu</div>
+              <button aria-label="Close menu" onClick={() => setOpen(false)} className="p-2 rounded-md text-neutral-700 hover:bg-slate-50">
+                <X size={18} />
+              </button>
+            </div>
 
-      <aside
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        className={`fixed right-0 z-50 transform transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "translate-x-full"} w-[min(85vw,320px)] top-16 h-[calc(100vh-4rem)]`}
-      >
-        <div className="h-full bg-white shadow-lg flex flex-col p-4 overflow-y-auto">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-lg font-bold">Menu</div>
-            <button
-              aria-label="Close menu"
-              onClick={() => setOpen(false)}
-              className="p-2 rounded-md text-neutral-700 hover:bg-slate-50"
-            >
-              <X size={18} />
-            </button>
-          </div>
+            <nav className="flex-1 overflow-auto">
+              <ul className="flex flex-col gap-3">
+                {links.map(({ href, label, Icon, auth }: any) => {
+                  if (auth && !isLoggedIn) return null;
+                  return (
+                    <li key={href}>
+                      <Link href={href} className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50" onClick={() => setOpen(false)}>
+                        <Icon size={18} className="text-neutral-600" />
+                        <span className="font-medium text-neutral-900">{label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
 
-          <nav className="flex-1 overflow-auto">
-            <ul className="flex flex-col gap-3">
-              {links.map(({ href, label, Icon, auth }: any) => {
-                if (auth && !isLoggedIn) return null;
-                return (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50"
-                      onClick={() => setOpen(false)}
-                    >
-                      <Icon size={18} className="text-neutral-600" />
-                      <span className="font-medium text-neutral-900">{label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-
-          <div className="mt-4 border-t pt-4 px-1">
-            {isLoggedIn ? (
-              <Link href="/create" className="block w-full text-center bg-neutral-900 text-white py-3 rounded-md">Create Post</Link>
-            ) : (
-              <Link href="/auth/login" className="block w-full text-center border border-neutral-200 py-3 rounded-md">Log in</Link>
-            )}
+            <div className="mt-4 border-t pt-4 px-1">
+              {isLoggedIn ? (
+                <Link href="/create" className="block w-full text-center bg-neutral-900 text-white py-3 rounded-md">Create Post</Link>
+              ) : (
+                <Link href="/auth/login" className="block w-full text-center border border-neutral-200 py-3 rounded-md">Log in</Link>
+              )}
+            </div>
           </div>
         </div>
       </aside>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {toggleButton}
+      {portalEl ? createPortal(panel, portalEl) : panel}
+    </>
   );
 };
 

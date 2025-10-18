@@ -8,12 +8,22 @@ import { uploadImages } from "@/utils/supabase/upload-images"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export const CreatePost = async (formData: FormData) => {
+  const rawTitle = formData.get('title');
+  const rawContent = formData.get('content');
+
   const parsed = postSchema.partial().parse({
-    title: formData.get('title'),
-    content: formData.get('content'),
+    title: typeof rawTitle === 'string' ? rawTitle.trim() || undefined : undefined,
+    content: typeof rawContent === 'string' ? rawContent.trim() || undefined : undefined,
   })
 
   const supabase = await createClient()
+
+  // Ensure title is present — postSchema.partial() allows undefined, but we need
+  // a title to generate a slug and insert the post.
+  if (!parsed.title) {
+    // Surface a clear error instead of letting a TypeError occur later.
+    throw new Error('Title is required')
+  }
 
   const title = parsed.title as string
   const content = parsed.content as string | undefined

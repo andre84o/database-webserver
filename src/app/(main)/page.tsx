@@ -17,12 +17,10 @@ export default async function Home() {
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-[1.1] sm:leading-tight mb-6 tracking-tight">
               Tastefully Curated Stories
             </h1>
-
             <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mb-6">
               A premium collection of visual essays and recipes — elegantly
               designed, meticulously edited.
             </p>
-
             <div className="flex gap-2 sm:gap-3">
               <div className="transform-gpu scale-95 sm:scale-100">
                 <ExplorePostsLink />
@@ -30,7 +28,7 @@ export default async function Home() {
               <Link
                 href="/about"
                 className="inline-block border border-white/20 text-white px-5 py-3 rounded-full text-base
-             max-[375px]:px-3 max-[375px]:py-2 max-[375px]:rounded-xl max-[375px]:text-sm"
+                max-[375px]:px-3 max-[375px]:py-2 max-[375px]:rounded-xl max-[375px]:text-sm"
               >
                 About
               </Link>
@@ -38,14 +36,11 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
       {error && (
         <div className="text-red-500">{String(error?.message ?? error)}</div>
       )}
       {(!data || data.length === 0) && (
-        <div className="text-center text-sm text-gray-500">
-          Inga inlägg hittades
-        </div>
+        <div className="text-center text-sm text-gray-500">No posts found</div>
       )}
       <HomePosts posts={data ?? []} />
     </div>
