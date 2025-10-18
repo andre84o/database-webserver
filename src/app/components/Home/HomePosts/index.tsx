@@ -105,9 +105,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                       <span className="inline-block bg-[var(--brand-center)] text-white text-xs px-3 py-1 rounded-full mb-3">
                         {data[0].category ?? "Featured"}
                       </span>
-                      <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2">
-                        {data[0].title}
-                      </h2>
+                      <h2 className="font-extrabold text-3xl md:text-4xl text-neutral-900 mb-2"></h2>
                       {data[0].content && (
                         <p className="text-lg text-neutral-700 mt-2 line-clamp-2">
                           {String(data[0].content).slice(0, 160)}
@@ -160,7 +158,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                         9
                       )}
                     </p>
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-sm text-neutral-600">
+                    <div className="mt-2 lg:-mt-2 pt-3 border-t border-slate-100 flex items-center justify-between text-sm text-neutral-600">
                       <div className="flex items-center gap-2">
                         <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center text-xs text-white">
                           {users?.username

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Logo from "../Logo";
 import AccountLinks from "../AccountLinks";
+import SearchInput from "../Search";
 import MobileNav from "../MobileNav";
 import { createClient } from "@/utils/supabase/server-client";
 import Navigation from "../Navigation";
@@ -57,9 +58,15 @@ export default async function Header() {
 
         <div className="flex-1">
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex items-center gap-6">
               <div className="hidden md:flex">
                 <Navigation />
+              </div>
+
+              <div className="flex-1 mx-6 hidden md:block">
+                <div className="max-w-xl mx-auto">
+                  <SearchInput />
+                </div>
               </div>
             </div>
 
