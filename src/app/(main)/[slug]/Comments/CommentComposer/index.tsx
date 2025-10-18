@@ -42,8 +42,13 @@ export default function CommentComposer({ postId, parentId, onPosted }: { postId
     }
     setPosting(false);
   };
-
-  const displayName = (user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'You') as string;
+  const displayName = (
+    user?.user_metadata?.username ||
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email ||
+    'You'
+  ) as string;
 
   return (
     <div className="max-w-2xl mx-auto mt-4">
@@ -71,11 +76,6 @@ export default function CommentComposer({ postId, parentId, onPosted }: { postId
                   placeholder={parentId ? `Svara som ${displayName}` : `Kommentera som ${displayName}`}
                   aria-label={parentId ? 'Reply' : 'New comment'}
                 />
-                <div className="flex items-center gap-2 mt-2 text-slate-500">
-                  <button type="button" className="text-xl" aria-label="Emoji">😊</button>
-                  <button type="button" className="text-xl" aria-label="Attach image">📷</button>
-                  <button type="button" className="text-xl" aria-label="GIF">🎞️</button>
-                </div>
               </div>
 
               <div className="flex-shrink-0">

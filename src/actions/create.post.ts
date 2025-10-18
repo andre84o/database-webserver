@@ -17,11 +17,7 @@ export const CreatePost = async (formData: FormData) => {
   })
 
   const supabase = await createClient()
-
-  // Ensure title is present — postSchema.partial() allows undefined, but we need
-  // a title to generate a slug and insert the post.
   if (!parsed.title) {
-    // Surface a clear error instead of letting a TypeError occur later.
     throw new Error('Title is required')
   }
 

@@ -59,13 +59,13 @@ const SinglePost = async (props: any) => {
               <div className="mt-4 flex gap-2">
                 <Link
                   href={`/${data.slug}/edit`}
-                  className="button-quaternary"
+                  className="button-quaternary cursor-pointer hover:border-green-500"
                 >
                   Edit
                 </Link>
                 <form action={"/api/posts/delete"} method="post">
                   <input type="hidden" name="postId" value={String(data.id)} />
-                  <button type="submit" className="button-quaternary">
+                  <button type="submit" className="button-quaternary cursor-pointer hover:border-red-500">
                     Delete
                   </button>
                 </form>
