@@ -26,7 +26,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="hidden md:flex items-center p-2">
+    <nav className="hidden md:flex items-center p-2 shadow-xl rounded-full shadow-gray-500">
       <div className="rounded-full bg-white/60 backdrop-blur-sm shadow-sm border border-neutral-100 px-4 py-2">
         <ul className="flex items-center gap-6">
           {links.map(({ href, label }) => {

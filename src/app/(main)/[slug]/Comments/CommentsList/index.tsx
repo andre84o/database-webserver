@@ -357,18 +357,19 @@ export default function CommentsList({
           </div>
 
           <div className="mt-1 flex items-center gap-3 text-xs text-slate-500">
-            <button className="hover:underline">Like</button>
-            <button
-              className="hover:underline"
-              onClick={() => {
-                setEditingId(null);
-                setReplyToRootId(rootId);
-                setReplyHintName(displayName);
-                setTimeout(() => replyInputRef.current?.focus(), 0);
-              }}
-            >
-              Reply
-            </button>
+            {userId && (
+              <button
+                className="hover:underline"
+                onClick={() => {
+                  setEditingId(null);
+                  setReplyToRootId(rootId);
+                  setReplyHintName(displayName);
+                  setTimeout(() => replyInputRef.current?.focus(), 0);
+                }}
+              >
+                Reply
+              </button>
+            )}
             <span>{relativeTime(c.created_at)}</span>
 
             {(userId === c.author_id || userId === postOwnerId) && (

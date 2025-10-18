@@ -30,7 +30,7 @@ export default async function Home() {
               <Link
                 href="/about"
                 className="inline-block bg-[#FFB9B3] hover:bg-[#BD807A] text-white text-2xl px-6 py-3 rounded-full font-semibold
-                shadow-2xl shadow-white max-[396px]:px-3 max-[396px]:py-2 max-[396px]:rounded-full max-[396px]:text-xs"
+                shadow-2xl shadow-white max-[396px]:px-3 max-[396px]:py-2 max-[396px]:rounded-full max-[396px]:text-xs active:shadow-red-500/50"
               >
                 About
               </Link>

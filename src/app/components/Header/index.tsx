@@ -29,7 +29,7 @@ export default async function Header() {
   }
 
   return (
-    <header className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] bg-neutral-50/60 backdrop-blur-sm border-b border-neutral-200">
+    <header className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] bg-neutral-50/60 backdrop-blur-sm border-b border-neutral-200 shadow-xl shadow-[#735BFD]">
       {signedIn && (
         <div
           className="
@@ -61,8 +61,7 @@ export default async function Header() {
         </div>
         <div className="flex-1">
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-6">
-            </div>
+            <div className="flex items-center gap-6"></div>
             <div className="flex items-center gap-4">
               <MobileNav />
               <div className="hidden md:flex">

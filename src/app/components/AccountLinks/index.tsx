@@ -36,14 +36,14 @@ const AccountLinks = async () => {
 
           <Link
             href="/create"
-            className="flex items-center gap-2 px-3 py-2 rounded-md border border-[#5E4EFD] hover:text-[#5E4EFD] hover:bg-slate-50"
+            className="flex items-center gap-2 px-3 py-2 rounded-md border border-[#5E4EFD] hover:text-[#5E4EFD] hover:bg-slate-50 shadow-xl active:shadow-[#5E4EFD] shadow-gray-500"
           >
             <Plus size={16} />
             <span>Create Post</span>
           </Link>
 
           <LogOutButton>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-[#5E4EFD] hover:text-[#5E4EFD] hover:bg-slate-50">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-[#5E4EFD] hover:text-[#5E4EFD] hover:bg-slate-50 shadow-xl active:shadow-[#5E4EFD] shadow-gray-500">
               <LogOut size={16} />
               <span>Log Out</span>
             </div>
@@ -52,7 +52,7 @@ const AccountLinks = async () => {
       ) : (
         <Link
           href="auth/login"
-          className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium shadow-md hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition"
+          className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium shadow-md hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition shadow-xl shadow-gray-500"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
