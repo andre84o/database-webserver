@@ -16,7 +16,10 @@ export const getHomePosts = async (
       .order("created_at", { ascending: false });
 
     if (category && category !== "") {
-      query = query.eq('category', category);
+      const cat = String(category).trim();
+      if (cat !== "") {
+        query = query.ilike('category', cat);
+      }
     }
 
     const res = await query;

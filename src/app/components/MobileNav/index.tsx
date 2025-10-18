@@ -99,7 +99,7 @@ const MobileNav = () => {
       />
       <aside ref={panelRef} role="dialog" aria-modal="true" className={`fixed inset-0 z-[99999] pointer-events-none`}>
         <div className={`absolute inset-0 transform transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "translate-x-full"}`}>
-          <div className="absolute right-0 top-10 h-[calc(100vh-4rem)] w-[min(85vw,320px)] bg-white shadow-lg flex flex-col p-4 overflow-y-auto pointer-events-auto shadow-xl shadow-[absolute right-0 top-10 h-[calc(100vh-4rem)] w-[min(85vw,320px)] bg-white shadow-lg flex flex-col p-4 overflow-y-auto pointer-events-auto">
+          <div className="absolute right-0 top-10 h-[calc(100vh-4rem)] w-[min(85vw,320px)] bg-white shadow-lg flex flex-col p-4 overflow-y-auto pointer-events-auto shadow-xl shadow-[absolute right-0 top-10 h-[calc(100vh-4rem)] w-[min(85vw,320px)] bg-white shadow-lg flex flex-col p-4 overflow-y-auto pointer-events-auto -translate-y-9">
             <div className="flex items-center justify-between mb-4">
               <div className="text-lg font-bold">Menu</div>
               <button aria-label="Close menu" onClick={() => setOpen(false)} className="p-2 rounded-md text-neutral-700 hover:bg-slate-50">
@@ -122,31 +122,32 @@ const MobileNav = () => {
                 })}
               </ul>
             </nav>
-
-            <div className="mt-4 border-t pt-4 px-1 space-y-2">
-              {isLoggedIn ? (
-                <div className="flex flex-col gap-2">
-                  <Link href="/create" className="flex items-center gap-3 p-3 rounded-md bg-neutral-900 text-white justify-center">
-                    <Plus size={16} />
-                    <span>Create Post</span>
-                  </Link>
-
-                  <div>
-                    <LogOutButton className="w-full">
-                      <div className="flex items-center gap-3 justify-center w-full p-3 rounded-md border border-neutral-200 hover:bg-slate-50">
-                        <LogIn size={16} className="transform rotate-180" />
-                        <span>Log out</span>
-                      </div>
-                    </LogOutButton>
+            <div className="mt-4 px-1">
+              <div className="space-y-2">
+                {isLoggedIn ? (
+                  <div className="flex flex-col gap-2">
+                    <Link href="/create" className="flex items-center gap-3 p-3 rounded-md bg-neutral-900 text-white justify-center">
+                      <Plus size={16} />
+                      <span>Create Post</span>
+                    </Link>
+                    <div>
+                      <LogOutButton className="w-full">
+                        <div className="flex items-center gap-3 justify-center w-full p-3 rounded-md border border-neutral-200 hover:bg-slate-50">
+                          <LogIn size={16} className="transform rotate-180" />
+                          <span>Log out</span>
+                        </div>
+                      </LogOutButton>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <Link href="/auth/login" className="flex items-center gap-3 p-3 rounded-md border border-neutral-200 justify-center">
-                  <LogIn size={16} />
-                  <span>Log in</span>
-                </Link>
-              )}
+                ) : (
+                  <Link href="/auth/login" className="flex items-center gap-3 p-3 rounded-md border border-neutral-200 justify-center">
+                    <LogIn size={16} />
+                    <span>Log in</span>
+                  </Link>
+                )}
+              </div>
             </div>
+            <div className="mt-4 border-t pt-4 px-1 mb-15" />
           </div>
         </div>
       </aside>

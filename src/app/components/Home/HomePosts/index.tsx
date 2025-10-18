@@ -5,6 +5,7 @@ import SearchInput from "@/app/components/Search";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/browser.client";
 import { useEffect, useState } from "react";
+import { CATEGORY_OPTIONS } from "@/actions/category-options";
 
 type PostItem = {
   id: number;
@@ -26,6 +27,8 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
   };
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  // Toggle to show/hide the category dropdown on the home page.
+  const SHOW_CATEGORY = false;
   const [category, setCategory] = useState<string>("");
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -36,6 +39,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
   const { data } = useQuery<PostItem[]>({
     queryKey: ["home-posts", category],
     queryFn: async () => {
+      console.debug("getHomePosts queryFn running with category:", category);
       const { data, error } = await getHomePosts(supabase, category ?? null);
       if (error) throw error;
       return data;
@@ -51,26 +55,24 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
         <div className="order-2 md:order-1 w-full md:w-auto md:mr-6">
           <SearchInput />
         </div>
-        <div className="order-1 md:order-2">
-          <label className="flex items-center gap-2">
-            <span className="text-sm">Category</span>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="border rounded px-2 py-1"
-            >
-              <option value="">All</option>
-              <option>Food</option>
-              <option>Politics</option>
-              <option>Travel</option>
-              <option>Inspiration</option>
-              <option>News</option>
-              <option>Food &amp; Recipes</option>
-              <option>Photo &amp; Design</option>
-              <option>Productivity</option>
-            </select>
-          </label>
-        </div>
+        {SHOW_CATEGORY && (
+          <div className="order-1 md:order-2">
+            <label className="flex items-center gap-2">
+              <span className="text-sm">Category</span>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="border rounded px-2 py-1"
+              >
+                {CATEGORY_OPTIONS.map((opt) => (
+                  <option key={String(opt.value)} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
       </div>
       <div
         className="

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CustomSelect from "@/app/components/CustomSelect";
+import { CATEGORY_OPTIONS } from "@/actions/category-options";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/app/components/providers/toast-provider";
 
@@ -80,20 +81,7 @@ const CreatePage = () => {
             <label className="block mb-2 font-medium text-sm" htmlFor="category">
               Category
             </label>
-            <CustomSelect
-              name="category"
-              options={[
-                { value: "", label: "Select a category" },
-                { value: "Food", label: "Food" },
-                { value: "Politics", label: "Politics" },
-                { value: "Travel", label: "Travel" },
-                { value: "Inspiration", label: "Inspiration" },
-                { value: "News", label: "News" },
-                { value: "Food & Recipes", label: "Food & Recipes" },
-                { value: "Photo & Design", label: "Photo & Design" },
-                { value: "Productivity", label: "Productivity" },
-              ]}
-            />
+            <CustomSelect name="category" options={CATEGORY_OPTIONS as any} />
           </div>
           <div className="hidden sm:block">
             <button className="w-40 inline-block bg-neutral-900 text-white py-3 px-4 rounded-lg" type="submit" disabled={saving}>
