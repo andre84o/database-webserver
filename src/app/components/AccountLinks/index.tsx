@@ -36,14 +36,14 @@ const AccountLinks = async () => {
 
           <Link
             href="/create"
-            className="flex items-center gap-2 px-3 py-2 rounded-md border border-[#5E4EFD] hover:text-[#5E4EFD] hover:bg-slate-50 shadow-xl active:shadow-[#5E4EFD] shadow-gray-500"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl hover:text-[#5E4EFD] hover:bg-slate-50 shadow-xl active:shadow-[#5E4EFD] shadow-gray-500"
           >
             <Plus size={16} />
             <span>Create Post</span>
           </Link>
 
           <LogOutButton>
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-[#5E4EFD] hover:text-[#5E4EFD] hover:bg-slate-50 shadow-xl active:shadow-[#5E4EFD] shadow-gray-500">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl hover:text-[#5E4EFD] hover:bg-slate-50 shadow-xl active:shadow-[#5E4EFD] shadow-gray-500">
               <LogOut size={16} />
               <span>Log Out</span>
             </div>

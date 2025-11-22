@@ -11,7 +11,7 @@ export default async function Home() {
   const { data, error } = await getHomePosts(supabase);
 
   return (
-    <div className="w-[100%] mx-auto mt-8">
+    <div className="w-[95%] mx-auto mt-12 mb-10">
       <MobileSearchInline />
       <section className="relative h-[50vh] md:h-[70vh] w-full rounded-3xl overflow-hidden mb-12 mt-5 bg-gradient-to-r from-gray-900/50 via-neutral-700/100/30 to-purple-400/50 text-white shadow-2xl">
         <div className="h-full flex items-center">

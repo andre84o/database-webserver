@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 import { getSinglePost } from "@/utils/supabase/queries";
 import { createClient } from "@/utils/supabase/server-client";
 import Link from "next/link";
-import DeletePost from "@/actions/delete.post";
+import DeleteButton from "./DeleteButton";
 import CommentsHost from "./Comments/CommentsHost";
 
 const SinglePost = async (props: any) => {
@@ -28,7 +28,7 @@ const SinglePost = async (props: any) => {
       )}
       {data && (
         <>
-          <div className="max-w-2xl mx-auto px-4 py-4 border-gray-700 border-1 mt-4 rounded-2xl">
+          <div className="max-w-2xl mx-auto px-4 py-4 border-gray-700 border-1 mt-12 rounded-2xl">
             {data.image_url ? (
               <div className="overflow-hidden rounded-2xl mb-4">
                 <img
@@ -63,12 +63,7 @@ const SinglePost = async (props: any) => {
                 >
                   Edit
                 </Link>
-                <form action={"/api/posts/delete"} method="post">
-                  <input type="hidden" name="postId" value={String(data.id)} />
-                  <button type="submit" className="button-quaternary cursor-pointer hover:border-red-500">
-                    Delete
-                  </button>
-                </form>
+                <DeleteButton postId={String(data.id)} />
               </div>
             )}
           </div>

@@ -515,7 +515,7 @@ export default function CommentsList({
         })}
       </div>
 
-      <div className="mt-4 flex justify-center">
+      <div className="mt-4 flex justify-center mb-20">
         <button
           onClick={() => setOffset((o) => o + limit)}
           className="rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium hover:bg-slate-200"

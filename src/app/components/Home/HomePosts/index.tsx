@@ -27,7 +27,6 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
   };
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  // Toggle to show/hide the category dropdown on the home page.
   const SHOW_CATEGORY = false;
   const [category, setCategory] = useState<string>("");
   useEffect(() => {
@@ -90,7 +89,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                 key={data[0].id}
                 className="lg:col-span-2 lg:row-span-2 block h-full"
               >
-                <article className="group relative overflow-hidden rounded-3xl shadow-xl bg-white hover:shadow-2xl transition-shadow duration-300 h-full flex flex-col">
+                <article className="relative overflow-hidden rounded-3xl shadow-xl bg-white hover:shadow-2xl transition-shadow duration-300 h-full flex flex-col">
                   <div className="w-full overflow-hidden">
                     {data[0].image_url ? (
                       <img
@@ -153,7 +152,7 @@ const HomePosts = ({ posts }: { posts: PostItem[] }) => {
                     <h3 className="font-semibold text-lg mb-2 text-neutral-900">
                       {title}
                     </h3>
-                    <p className="text-sm text-neutral-600 mb-3">
+                    <p className="text-sm text-neutral-600 mb-3 line-clamp-1">
                       {excerptWords(
                         (data as any).find((p: any) => p.id === id)?.content ??
                           "",

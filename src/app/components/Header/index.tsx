@@ -29,20 +29,19 @@ export default async function Header() {
   }
 
   return (
-    <header className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw] bg-neutral-50/60 backdrop-blur-sm border-b border-neutral-200 shadow-xl shadow-[#735BFD]">
+    <header className="relative bg-neutral-50/60 backdrop-blur-sm border-b border-neutral-200 shadow-xl shadow-[#735BFD] p-4">
       {signedIn && (
         <div
           className="
-      pointer-events-none select-none
-      absolute bottom-1 left-2 md:hidden  /* Svenska: bara mobil */
-      z-10 text-xs sm:text-sm text-gray-400 whitespace-nowrap
-    "
+        pointer-events-none select-none
+        absolute bottom-1 left-2 md:hidden
+        z-10 text-xs sm:text-sm text-gray-400 whitespace-nowrap
+      "
         >
           ID: {username ?? userEmail}
         </div>
       )}
-
-      <div className="relative flex items-center">
+      <div className="relative flex items-center md:translate-y-5">
         <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 md:pl-6">
           <div className="block md:hidden">
             <Logo />
@@ -54,17 +53,21 @@ export default async function Header() {
             </div>
           </div>
         </div>
-        <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
+        <div className="hidden min-[970px]:block absolute left-1/2 transform -translate-x-1/2">
           <div className="max-w-3xl">
             <Navigation />
           </div>
         </div>
+
         <div className="flex-1">
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-6"></div>
             <div className="flex items-center gap-4">
-              <MobileNav />
-              <div className="hidden md:flex">
+              <div className="min-[970px]:hidden">
+                <MobileNav />
+              </div>
+
+              <div className="hidden min-[970px]:flex">
                 <AccountLinks />
               </div>
             </div>

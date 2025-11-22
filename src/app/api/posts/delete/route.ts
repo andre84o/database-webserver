@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
     await supabase.from('posts').delete().eq('id', id).throwOnError()
 
-    return NextResponse.redirect('/')
+    return NextResponse.json({ ok: true, message: 'Post deleted' })
   } catch (err: any) {
     return NextResponse.json({ ok: false, message: String(err?.message ?? err) }, { status: 500 })
   }

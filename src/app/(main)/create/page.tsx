@@ -8,8 +8,22 @@ import { useToast } from "@/app/components/providers/toast-provider";
 
 const CreatePage = () => {
   const [saving, setSaving] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const toast = useToast();
   const router = useRouter();
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,9 +80,20 @@ const CreatePage = () => {
               type="file"
               accept="image/*"
               className="hidden"
+              onChange={handleImageChange}
             />
 
-            <label htmlFor="image" className="bookmarkBtn">
+            {imagePreview && (
+              <div className="mb-3 overflow-hidden rounded-lg border border-gray-200">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+            )}
+
+            <label htmlFor="image" className="bookmarkBtn cursor-pointer">
               <span className="IconContainer">
                 <svg className="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>

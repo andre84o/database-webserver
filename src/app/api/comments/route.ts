@@ -48,14 +48,22 @@ export async function GET(req: NextRequest) {
   const postId = url.searchParams.get("post_id");
   const limit = url.searchParams.get("limit") ?? "20";
   const offset = url.searchParams.get("offset") ?? "0";
-  if (!postId) return NextResponse.json({ ok: false, message: "post_id required" }, { status: 400 });
+  
+  if (!postId || postId === "undefined" || postId === "null") {
+    return NextResponse.json({ ok: false, message: "post_id required" }, { status: 400 });
+  }
+  
+  const postIdNum = Number(postId);
+  if (isNaN(postIdNum)) {
+    return NextResponse.json({ ok: false, message: "post_id must be a valid number" }, { status: 400 });
+  }
 
   const supabase = createSupabase(req) as any;
   try {
     const { data, error } = await supabase
       .from("comments")
       .select(`id, post_id, parent_id, author_id, content, created_at, updated_at`)
-      .eq("post_id", Number(postId))
+      .eq("post_id", postIdNum)
       .order("created_at", { ascending: false })
       .range(Number(offset), Number(offset) + Number(limit) - 1);
 

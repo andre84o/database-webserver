@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const AboutPage = () => {
     return (
-      <main className="min-h-screen bg-white text-slate-900">
+      <main className="min-h-screen bg-white text-slate-900 mt-12">
         <section className="relative overflow-hidden">
           <div className="w-full py-24 px-6 sm:px-8 lg:px-16 rounded-b-3xl about-hero">
             <div className="max-w-6xl mx-auto text-center text-white">

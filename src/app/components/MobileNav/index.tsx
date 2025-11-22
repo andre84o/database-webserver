@@ -84,7 +84,7 @@ const MobileNav = () => {
       aria-label={open ? "Close menu" : "Open menu"}
       aria-expanded={open ? "true" : "false"}
       onClick={() => setOpen((v) => !v)}
-      className="md:hidden p-2 rounded-md bg-white border border-neutral-200 text-neutral-700 hover:bg-slate-50"
+      className="p-2 rounded-md bg-white border border-neutral-200 text-neutral-700 hover:bg-slate-50"
     >
       {open ? <X size={18} /> : <Menu size={18} />}
     </button>
