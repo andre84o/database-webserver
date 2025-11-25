@@ -37,7 +37,7 @@ const DeleteButton = ({ postId }: { postId: string }) => {
 
   return (
     <>
-      <button onClick={openConfirm} className="button-tertiary" disabled={isPending}>
+      <button onClick={openConfirm} className="text-sm button-tertiary hover:border hover:border-red-600" disabled={isPending}>
         {isPending ? "Deleting..." : "Delete Post"}
       </button>
 
