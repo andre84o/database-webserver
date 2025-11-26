@@ -16,7 +16,7 @@ const SignUpForm = () => {
     resolver: zodResolver(signUpSchema),
   });
 
-  const { mutate, isPending, error } = useMutation({
+  const { mutate, isPending, data, error } = useMutation({
     mutationFn: SignUp,
   });
 
@@ -114,6 +114,12 @@ const SignUpForm = () => {
         {error && typeof (error as any).message === "string" && (
           <div className="mt-4">
             <ErrorMessage message={(error as any).message} />
+          </div>
+        )}
+
+        {data && !data.ok && (
+          <div className="mt-4">
+            <ErrorMessage message={data.message} />
           </div>
         )}
       </div>
