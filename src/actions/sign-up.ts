@@ -31,7 +31,19 @@ export const SignUp = async (userdata: SignUpInput): Promise<SignUpResult> => {
 
     if (error) {
       console.error("Supabase signUp error", error);
-      return { ok: false, message: error.message ?? "Failed to create account" };
+      const authError: any = error;
+
+      if (authError.code === "user_already_exists") {
+        return {
+          ok: false,
+          message: "A user with this email already exists.",
+        };
+      }
+
+      return {
+        ok: false,
+        message: error.message ?? "Failed to create account",
+      };
     }
 
     if (!data?.user) {

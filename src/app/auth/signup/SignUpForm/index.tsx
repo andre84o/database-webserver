@@ -6,8 +6,10 @@ import { signUpSchema } from "@/actions/schemas";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "@/app/components/ErrorMessage";
+import { useRouter } from "next/navigation";
 
 const SignUpForm = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -18,6 +20,11 @@ const SignUpForm = () => {
 
   const { mutate, isPending, data, error } = useMutation({
     mutationFn: SignUp,
+    onSuccess: (result) => {
+      if (result.ok) {
+        router.push("/");
+      }
+    },
   });
 
   return (
