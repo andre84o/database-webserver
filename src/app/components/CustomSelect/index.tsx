@@ -93,7 +93,7 @@ export default function CustomSelect({ name, defaultValue, options, children, cl
           role="listbox"
           aria-label="select options"
           tabIndex={-1}
-          className={`${openUp ? 'absolute left-0 right-0 bottom-full mb-2' : 'absolute left-0 right-0 mt-2'} bg-white border rounded-md z-50 max-h-[9rem] overflow-auto`}
+          className={`${openUp ? 'absolute left-0 right-0 bottom-full mb-2' : 'absolute left-0 right-0 mt-2'} bg-white border rounded-md z-[60] max-h-[9rem] overflow-auto shadow-lg`}
         >
           {opts.map((o, i) => (
             <div
