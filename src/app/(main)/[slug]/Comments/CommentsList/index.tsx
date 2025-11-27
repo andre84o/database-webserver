@@ -114,8 +114,10 @@ export default function CommentsList({
           const ev = payload.eventType;
           const newRow = payload.new as Comment;
           const oldRow = payload.old as Comment;
-          if (ev === "INSERT" && newRow) setComments((c) => [...c, newRow]);
-          else if (ev === "UPDATE" && newRow)
+          if (ev === "INSERT" && newRow) {
+            // Only add if not already present (avoid duplicate from optimistic update)
+            setComments((c) => c.some((x) => x.id === newRow.id) ? c : [...c, newRow]);
+          } else if (ev === "UPDATE" && newRow)
             setComments((c) => c.map((x) => (x.id === newRow.id ? newRow : x)));
           else if (ev === "DELETE" && oldRow)
             setComments((c) => c.filter((x) => x.id !== oldRow.id));
@@ -246,15 +248,6 @@ export default function CommentsList({
     };
     setComments((c) => [...c, optimistic]);
 
-    const res = await fetch(`/api/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        post_id: postId,
-        parent_id: parentRootId,
-        content,
-      }),
-    });
     try {
       const json = await apiFetch(`/api/comments`, {
         method: 'POST',

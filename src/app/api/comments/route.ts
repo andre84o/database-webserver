@@ -107,6 +107,26 @@ export async function GET(req: NextRequest) {
     const usersMap = new Map<string, any>();
     (usersData ?? []).forEach((u: any) => usersMap.set(String(u.id), u));
 
+    // Find authors missing from public.users table
+    const missingAuthorIds = authorIds.filter((id) => !usersMap.has(String(id)));
+
+    // Try to get missing users from auth.users via admin client
+    if (missingAuthorIds.length > 0 && serviceRoleKey) {
+      try {
+        const admin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey);
+        for (const oderId of missingAuthorIds) {
+          const { data: authUser } = await admin.auth.admin.getUserById(oderId);
+          if (authUser?.user) {
+            const u = authUser.user;
+            const username = u.user_metadata?.username || u.user_metadata?.full_name || u.email?.split("@")[0] || "User";
+            usersMap.set(String(oderId), { id: oderId, username });
+          }
+        }
+      } catch (e) {
+        console.error("GET /api/comments: auth.users fetch error", e);
+      }
+    }
+
     const merged = comments.map((c) => ({
       ...c,
       users: usersMap.get(String(c.author_id)) ?? null,
@@ -137,7 +157,31 @@ export async function POST(req: NextRequest) {
   if (parent_id) insertObj.parent_id = parent_id;
   const { data, error } = await supabase.from("comments").insert(insertObj).select(`id, post_id, parent_id, author_id, content, created_at, updated_at`);
   if (error) return NextResponse.json({ ok: false, message: String(error) }, { status: 500 });
-  return NextResponse.json({ ok: true, data });
+
+  // Fetch username for the current user - try with service role to bypass RLS
+  let userData: any = null;
+  const serviceRoleKey = loadServiceRoleKeyFromEnvFiles();
+  if (serviceRoleKey) {
+    try {
+      const admin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey);
+      const { data } = await admin.from("users").select("id, username").eq("id", user.id).maybeSingle();
+      userData = data;
+    } catch (e) {
+      console.error("POST /api/comments: admin user fetch error", e);
+    }
+  } else {
+    const { data } = await supabase.from("users").select("id, username").eq("id", user.id).maybeSingle();
+    userData = data;
+  }
+
+  // Use username from users table, or fallback to user metadata
+  const username = userData?.username || user.user_metadata?.username || user.user_metadata?.full_name || user.email?.split("@")[0] || "You";
+  const merged = (data ?? []).map((c: any) => ({
+    ...c,
+    users: { id: user.id, username },
+  }));
+
+  return NextResponse.json({ ok: true, data: merged });
 }
 
 export async function PATCH(req: NextRequest) {
