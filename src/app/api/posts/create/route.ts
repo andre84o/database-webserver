@@ -19,7 +19,30 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: userData, error: userErr } = await supabase.auth.getUser();
     if (userErr) throw userErr;
-    const userId = userData?.user?.id ?? null;
+    const user = userData?.user;
+    const userId = user?.id ?? null;
+
+    // Ensure user exists in public.users table (for foreign key constraint)
+    if (userId) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const svc = createSupabaseClient(supabaseUrl, serviceKey);
+
+      const username = user?.user_metadata?.username || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+
+      // First check if user exists
+      const { data: existingUser } = await svc.from('users').select('id').eq('id', userId).maybeSingle();
+
+      if (!existingUser) {
+        // Insert new user
+        const email = user?.email || `${userId}@placeholder.local`;
+        const { error: insertUserErr } = await svc.from('users').insert({ id: userId, username, email });
+        console.log('Creating user in public.users:', { userId, username, email, error: insertUserErr });
+        if (insertUserErr) {
+          console.error('Failed to create user:', insertUserErr);
+        }
+      }
+    }
 
     let image_url: string | null = null;
     const image = formData.get('image') as File | null;
