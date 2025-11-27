@@ -158,13 +158,18 @@ export default function CommentsList({
     ).filter((id) => !loadedUserIdsRef.current.has(id));
     if (unknownIds.length === 0) return;
 
+    // Filter to valid UUIDs only to avoid PostgREST 400 errors
+    const uuidV4 = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    const validIds = unknownIds.filter((id) => uuidV4.test(id));
+    if (validIds.length === 0) return;
+
     const supabase = createClient();
     (async () => {
       try {
         const { data: users } = await supabase
           .from("users")
-          .select("id, username, avatar_url")
-          .in("id", unknownIds as any);
+          .select("id, username")
+          .in("id", validIds as any);
         const map = new Map<string, any>();
         (users ?? []).forEach((u: any) => {
           map.set(String(u.id), u);
@@ -177,7 +182,7 @@ export default function CommentsList({
           }))
         );
       } catch (e) {
-        console.error("client-side users fetch error", e);
+        console.error("client-side users fetch error", { error: e, validIds });
       }
     })();
   }, [comments]);
