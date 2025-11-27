@@ -54,7 +54,7 @@ export default function CommentComposer({ postId, parentId, onPosted }: { postId
   ) as string;
 
   return (
-    <div className="max-w-2xl mx-auto mt-4">
+    <div className="max-w-2xl mx-auto mt-4 mr-2 ml-2">
       {user ? (
         <form onSubmit={submit} className="flex items-start gap-3">
           <div className="mt-1">

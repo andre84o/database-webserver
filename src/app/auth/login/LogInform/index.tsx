@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { logInSchema } from "@/actions/schemas";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import { useMutation } from "@tanstack/react-query";
-import { de } from "zod/locales";
 
 const LoginForm = () => {
   const {

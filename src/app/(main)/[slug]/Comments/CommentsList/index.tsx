@@ -32,7 +32,6 @@ export default function CommentsList({
 
   const [replyToRootId, setReplyToRootId] = useState<number | null>(null);
   const [replyHintName, setReplyHintName] = useState<string>("");
-  const [replyDrafts, setReplyDrafts] = useState<Record<number, string>>({});
   const replyInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -94,7 +93,7 @@ export default function CommentsList({
         (json.data ?? []).forEach((c: Comment) => map.set(c.id, c));
         return Array.from(map.values()).sort(
           (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
       });
       setLoading(false);
@@ -115,7 +114,7 @@ export default function CommentsList({
           const ev = payload.eventType;
           const newRow = payload.new as Comment;
           const oldRow = payload.old as Comment;
-          if (ev === "INSERT" && newRow) setComments((c) => [newRow, ...c]);
+          if (ev === "INSERT" && newRow) setComments((c) => [...c, newRow]);
           else if (ev === "UPDATE" && newRow)
             setComments((c) => c.map((x) => (x.id === newRow.id ? newRow : x)));
           else if (ev === "DELETE" && oldRow)
@@ -139,7 +138,7 @@ export default function CommentsList({
         prev.forEach((p) => map.set(p.id, p));
         (json.data ?? []).forEach((c: Comment) => map.set(c.id, c));
         return Array.from(map.values()).sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
       });
     } catch (e) {
@@ -245,7 +244,7 @@ export default function CommentsList({
       created_at: new Date().toISOString(),
       users: { username: "You", avatar_url: undefined },
     };
-    setComments((c) => [optimistic, ...c]);
+    setComments((c) => [...c, optimistic]);
 
     const res = await fetch(`/api/comments`, {
       method: "POST",
@@ -268,8 +267,7 @@ export default function CommentsList({
       });
       const inserted: Comment | undefined = json.data?.[0];
       if (inserted)
-        setComments((c) => [inserted, ...c.filter((x) => x.id !== tempId)]);
-      setReplyDrafts((d) => ({ ...d, [parentRootId]: "" }));
+        setComments((c) => [...c.filter((x) => x.id !== tempId), inserted]);
       setReplyToRootId(null);
       setReplyHintName("");
       revalidateComments();
@@ -430,65 +428,17 @@ export default function CommentsList({
     );
   };
 
-  const ReplyForm = ({ parentRootId }: { parentRootId: number }) => {
-    const value = replyDrafts[parentRootId] ?? "";
-    return (
-      <div className="mt-2 ml-11">
-        <div className="flex items-start gap-2 rounded-2xl bg-slate-100 px-3 py-2">
-          <textarea
-            ref={replyInputRef}
-            autoFocus
-            value={value}
-            onChange={(e) =>
-              setReplyDrafts((d) => ({ ...d, [parentRootId]: e.target.value }))
-            }
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleCreateReply(parentRootId, value);
-              }
-            }}
-            rows={2}
-            className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
-            placeholder={
-              replyHintName
-                ? `Reply to ${replyHintName}...`
-                : "Write a reply..."
-            }
-            aria-label="Reply input"
-          />
-        </div>
-        <div className="mt-2 flex items-center gap-2">
-          <button
-            onClick={() => handleCreateReply(parentRootId, value)}
-            className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
-          >
-            Reply
-          </button>
-          <button
-            onClick={() => {
-              setReplyToRootId(null);
-              setReplyHintName("");
-              setReplyDrafts((d) => ({ ...d, [parentRootId]: "" }));
-            }}
-            className="rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    );
-  };
+  const replyValueRef = useRef<string>("");
 
   return (
-    <div className="max-w-2xl mx-auto mt-6">
+    <div className="max-w-2xl mr-2 ml-2 mt-6">
       <h4 className="mb-3 font-semibold">Comments</h4>
 
       {loading && (
         <div className="text-sm text-slate-500">Loading comments...</div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-4 mr-2 ml-2">
         {rootComments.length === 0 && !loading && (
           <div className="text-sm text-slate-500">No comments yet</div>
         )}
@@ -512,7 +462,52 @@ export default function CommentsList({
                 ))}
 
                 {replyToRootId === root.id && (
-                  <ReplyForm parentRootId={root.id} />
+                  <div className="mt-2">
+                    <div className="flex items-start gap-2 rounded-2xl bg-slate-100 px-3 py-2">
+                      <textarea
+                        ref={replyInputRef}
+                        autoFocus
+                        defaultValue=""
+                        onChange={(e) => { replyValueRef.current = e.target.value; }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            handleCreateReply(root.id, replyValueRef.current);
+                            replyValueRef.current = "";
+                          }
+                        }}
+                        rows={2}
+                        className="w-full rounded-md border border-slate-300 bg-white p-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+                        placeholder={
+                          replyHintName
+                            ? `Reply to ${replyHintName}...`
+                            : "Write a reply..."
+                        }
+                        aria-label="Reply input"
+                      />
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          handleCreateReply(root.id, replyValueRef.current);
+                          replyValueRef.current = "";
+                        }}
+                        className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
+                      >
+                        Reply
+                      </button>
+                      <button
+                        onClick={() => {
+                          setReplyToRootId(null);
+                          setReplyHintName("");
+                          replyValueRef.current = "";
+                        }}
+                        className="rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

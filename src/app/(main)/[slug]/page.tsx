@@ -28,7 +28,7 @@ const SinglePost = async (props: any) => {
       )}
       {data && (
         <>
-          <div className="max-w-2xl mx-auto px-4 py-4 border-gray-700 border-1 mt-12 rounded-2xl">
+          <div className="max-w-2xl mx-auto px-4 py-4 border-gray-700 border-1 mr-2 ml-2 mt-12 rounded-2xl">
             {data.image_url ? (
               <div className="overflow-hidden rounded-2xl mb-4">
                 <img
@@ -67,7 +67,7 @@ const SinglePost = async (props: any) => {
               </div>
             )}
           </div>
-          <div className="max-w-2xl mx-auto px-4 py-6 mt-6 rounded-2xl bg-white shadow-sm">
+          <div className="max-w-2xl mx-auto px-4 py-6 mt-6 mr-2 ml-2 rounded-2xl bg-white shadow-sm">
             {data.content && (
               <div className="prose max-w-none">{data.content}</div>
             )}

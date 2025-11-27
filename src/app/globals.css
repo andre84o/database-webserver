@@ -13,15 +13,6 @@ img {
   transform: none !important;
 }
 
-/* Force LTR typing order in inputs/textareas regardless of locale/IME */
-input,
-textarea,
-[contenteditable="true"] {
-  direction: ltr !important;
-  text-align: left !important;
-  unicode-bidi: bidi-override !important;
-}
-
 @layer components {
   :root {
     --brand-purple-1: #8B64FE;
