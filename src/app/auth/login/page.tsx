@@ -6,7 +6,7 @@ const LogInPage = () => {
     <div className="min-h-screen flex items-center justify-center py-8 -md:mx-8 sm:mx-0 -translate-y-10">
       <div
         className="
-          w-full
+          w-[90%]
           max-w-lg
           sm:max-w-xl
           lg:max-w-2xl

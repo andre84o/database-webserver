@@ -36,7 +36,7 @@ export const CreatePost = async (formData: FormData) => {
 
   let image_url: string | null = null
   const image = formData.get('image') as File | null
-  if (image && image instanceof File) {
+  if (image && image instanceof File && image.size > 0 && image.name && image.name !== '' && image.type.startsWith('image/')) {
     image_url = await uploadImages(image)
   }
 

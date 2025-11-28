@@ -80,7 +80,8 @@ export async function updatePost(formData: FormData) {
       }
     }
     const isFileLike = image && (image instanceof File || typeof image?.arrayBuffer === 'function');
-    if (isFileLike) {
+    const hasValidImage = isFileLike && (image as any).size > 0 && (image as any).name && (image as any).type?.startsWith('image/');
+    if (hasValidImage) {
       try {
         imageUrlToSet = await uploadImages(image, userId ?? undefined)
         console.log('upload-images upload result, imageUrlToSet:', imageUrlToSet)

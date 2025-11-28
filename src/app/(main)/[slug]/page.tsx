@@ -29,7 +29,7 @@ const SinglePost = async (props: any) => {
       {data && (
         <>
           <div className="max-w-2xl mx-auto px-4 py-4 border-gray-700 border-1 mr-2 ml-2 mt-12 rounded-2xl">
-            {data.image_url ? (
+            {data.image_url && data.image_url.trim() ? (
               <div className="overflow-hidden rounded-2xl mb-4">
                 <img
                   src={data.image_url}
@@ -37,7 +37,13 @@ const SinglePost = async (props: any) => {
                   className="w-full h-72 object-cover"
                 />
               </div>
-            ) : null}
+            ) : (
+              <div className="overflow-hidden rounded-2xl mb-4 bg-gradient-to-br from-purple-100 to-indigo-100 h-72 flex items-center justify-center p-8">
+                <h1 className="font-extrabold text-4xl md:text-5xl text-neutral-900 text-center">
+                  {data.title}
+                </h1>
+              </div>
+            )}
 
             <div className="mb-3 flex items-center justify-between">
               <span className="inline-block bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-full">

@@ -21,20 +21,15 @@ export async function POST(request: Request) {
     if (userErr) throw userErr;
     const user = userData?.user;
     const userId = user?.id ?? null;
-
-    // Ensure user exists in public.users table (for foreign key constraint)
     if (userId) {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
       const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
       const svc = createSupabaseClient(supabaseUrl, serviceKey);
 
       const username = user?.user_metadata?.username || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
-
-      // First check if user exists
       const { data: existingUser } = await svc.from('users').select('id').eq('id', userId).maybeSingle();
 
       if (!existingUser) {
-        // Insert new user
         const email = user?.email || `${userId}@placeholder.local`;
         const { error: insertUserErr } = await svc.from('users').insert({ id: userId, username, email });
         console.log('Creating user in public.users:', { userId, username, email, error: insertUserErr });
@@ -46,7 +41,7 @@ export async function POST(request: Request) {
 
     let image_url: string | null = null;
     const image = formData.get('image') as File | null;
-    if (image && image instanceof File) {
+    if (image && image instanceof File && image.size > 0 && image.name && image.name !== '' && image.type.startsWith('image/')) {
       image_url = await uploadImages(image);
     }
 
