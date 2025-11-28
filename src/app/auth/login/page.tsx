@@ -3,7 +3,7 @@ import LogInForm from "./LogInform";
 
 const LogInPage = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center py-8 -md:mx-8 sm:mx-0 -translate-y-10">
+    <div className="min-h-screen flex items-center justify-center py-8 -translate-y-10">
       <div
         className="
           w-[90%]
